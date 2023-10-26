@@ -37,9 +37,11 @@ public class GameManager : MonoBehaviour
     }
     public void Restart()
     {
+        Debug.Log(("GAMEMANAGER RESTART"));
         levelsManager.Restart();
         players[playerInTurn].Restart();
         ball.Restart(playerInTurn);
+        StartGame();
     }
 
     public void StartMatch()
@@ -117,14 +119,16 @@ public class GameManager : MonoBehaviour
         gameAudio.onGameWin();
         if (levelsManager.HasNextLevel())
         {
+            Debug.Log("DEV - GameManager - Win() - There's next level");
             gameStatus = GameStatus.NEXT_LEVEL_SCREEN;
+            uIManager.UpdateScreen(gameStatus);
         }
         else
         {
+            Debug.Log("DEV - GameManager - Win() - There's no next level");
             gameStatus = GameStatus.WIN_SCREEN;
+            uIManager.UpdateScreen(gameStatus);
         }
-        uIManager.ShowWinner(player);
-
     }
 
     public void RestartMatch()

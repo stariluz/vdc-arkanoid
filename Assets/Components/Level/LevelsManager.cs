@@ -29,6 +29,7 @@ public class LevelsManager : MonoBehaviour
     {
         currentLevel.gameObject.SetActive(false);
         Destroy(currentLevel.gameObject);
+        Debug.Log("DESTRUIDO NIVEL");
     }
 
     public Level NextLevel()
