@@ -371,7 +371,7 @@ MonoBehaviour:
   ball: {fileID: 1039479557}
   gameStatus: 0
   gameAudio: {fileID: 188433474}
-  levelsManager: {fileID: 131509709}
+  levelsManager: {fileID: 337310047}
 --- !u!4 &188433476
 Transform:
   m_ObjectHideFlags: 0
@@ -521,6 +521,54 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &337310046
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 337310048}
+  - component: {fileID: 337310047}
+  m_Layer: 0
+  m_Name: TestLevelsManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &337310047
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 337310046}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67eefad20dd9840f8a4b05dabb70b3ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  levels:
+  - {fileID: 7787178327375183001, guid: 2c469deed139f44e6a0d08e3dc9251cd, type: 3}
+  - {fileID: 7787178327375183001, guid: 9f28ac2eb05214d79a8668fd786fde83, type: 3}
+  - {fileID: 6777474315763166468, guid: 526f70d5fd9154c2cbeda76d3feb4f7a, type: 3}
+--- !u!4 &337310048
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 337310046}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 7.3426123, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &372306534
 GameObject:
   m_ObjectHideFlags: 0

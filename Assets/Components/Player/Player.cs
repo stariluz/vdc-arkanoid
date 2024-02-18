@@ -42,6 +42,7 @@ public class Player : MonoBehaviour
     public void Restart()
     {
 		paddleMovement.Restart();
+        lives = initialLives;
     }
 }
 
