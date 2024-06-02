@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting.ReorderableList;
 using UnityEngine;
 
 public class PaddleMovement : MonoBehaviour
@@ -23,9 +24,31 @@ public class PaddleMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        MobileMovement();
+    }
+    void PCMovement()
+    {
         float movement = Input.GetAxis(inputAxis);
         paddleRB.velocity = new Vector2(movement * speed, paddleRB.velocity.y);
-
+    }
+    private bool _isMoving=false;
+    public bool IsMoving(){
+        return _isMoving;
+    }
+    void MobileMovement()
+    {
+        // Handle screen touches.
+        if (Input.touchCount > 0)
+        {
+            Touch touch = Input.GetTouch(0);
+            if (touch.phase == TouchPhase.Moved)
+            {
+                _isMoving=true;
+                paddleRB.velocity = new Vector2(touch.deltaPosition.x/16 * speed, paddleRB.velocity.y);
+            }else{
+                _isMoving=false;
+            }
+        }
     }
 
     public void Restart()

@@ -40,12 +40,20 @@ public class BallMovement : MonoBehaviour
         /*Vector2 newPosition = gameManager.players[gameManager.playerInTurn].paddleMovement.GetPosition();
         newPosition.y += 2;
         ballRigidbody.position = newPosition;*/
-        float launch = Input.GetAxis(launchAxis);
-        if (launch!=0)
+        bool launch = MobileLauch();
+        if (launch == true)
         {
-            Launch(gameManager.playerInTurn, launch);
+            Launch(gameManager.playerInTurn);
         }
 
+    }
+    private bool PCLaunch()
+    {
+        return Input.GetAxis(launchAxis) > 0;
+    }
+    private bool MobileLauch()
+    {
+        return Input.touchCount > 0 && gameManager.GetPlayerInTurn().paddleMovement.IsMoving();
     }
 
     void LaunchedUpdate()
@@ -67,7 +75,7 @@ public class BallMovement : MonoBehaviour
         StartMatch(player);
     }
 
-    public void Launch(PlayersEnum player, float launchPress)
+    public void Launch(PlayersEnum player)
     {
         // Generate a random floating-point number between -1 and 1
         float yRandom = -1;
@@ -82,10 +90,7 @@ public class BallMovement : MonoBehaviour
         gameObject.transform.SetParent(null);
         executeBallUpdate = LaunchedUpdate;
 
-        Vector2 aux = new Vector2(xRandom, yRandom).normalized;
-        aux.x *= launchPress;
-        aux.y *= launchPress;
-        UpdateVelocity(aux);
+        UpdateVelocity(new Vector2(xRandom, yRandom).normalized);
     }
     void UpdateVelocity(Vector2 direction)
     {
@@ -106,7 +111,8 @@ public class BallMovement : MonoBehaviour
             ).normalized);
             gameManager.SetCurrentPlayerInTurn(collision.gameObject.GetComponent<PaddleMovement>().player);
             ballAudio.onHitPaddle();
-        }else if (collision.gameObject.CompareTag("ExploitableBlock"))
+        }
+        else if (collision.gameObject.CompareTag("ExploitableBlock"))
         {
             UpdateVelocity(new Vector2(
                 (float)(ballRigidbody.velocity.x + random.NextDouble() * 10 - 5),

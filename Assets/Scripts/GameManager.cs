@@ -28,6 +28,9 @@ public class GameManager : MonoBehaviour
     {
 
     }
+    public Player GetPlayerInTurn(){
+        return players[playerInTurn];
+    }
     public void StartGame()
     {
         levelsManager.StartLevels();

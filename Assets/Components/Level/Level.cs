@@ -1,14 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Level : MonoBehaviour
 {
-    private int remainnigBlocks=0;
+    private int remainigBlocks=0;
+    
     // Start is called before the first frame update
     void Start()
     {
-        remainnigBlocks = transform.childCount;
+        CountBlocks();
     }
 
     // Update is called once per frame
@@ -16,10 +19,15 @@ public class Level : MonoBehaviour
     {
         
     }
+    private void CountBlocks(){
+        Transform[] children=transform.GetComponentsInChildren<Transform>();
+        remainigBlocks=children.Length-1;
+        // Debug.Log((remainigBlocks));
+    }
 
     public bool IsLevelCompleted()
     {
-        if (remainnigBlocks == 0)
+        if (remainigBlocks == 0)
         {
             return true;
         }
@@ -30,6 +38,6 @@ public class Level : MonoBehaviour
     }
     public void BlockDestroyed()
     {
-        remainnigBlocks--;
+        remainigBlocks--;
     }
 }

@@ -22,7 +22,7 @@ public class LevelsManager : MonoBehaviour
     public void StartLevels()
     {
         currentLevelIndex = 0;
-        GameObject firstLevel = Instantiate(levels[0].gameObject, new Vector3(0, 7.342612f, 0), Quaternion.identity);
+        GameObject firstLevel = Instantiate(levels[0].gameObject, transform.position, Quaternion.identity);
         currentLevel = firstLevel.GetComponent<Level>();
     }
     public void Restart()
@@ -37,7 +37,7 @@ public class LevelsManager : MonoBehaviour
         currentLevel.gameObject.SetActive(false);
         Destroy(currentLevel.gameObject);
         currentLevelIndex++;
-        GameObject nextLevel=Instantiate(levels[currentLevelIndex].gameObject, new Vector3(0, 7.342612f, 0), Quaternion.identity);
+        GameObject nextLevel=Instantiate(levels[currentLevelIndex].gameObject, transform.position, Quaternion.identity);
         currentLevel=nextLevel.GetComponent<Level>();
         currentLevel.gameObject.SetActive(true);
 
