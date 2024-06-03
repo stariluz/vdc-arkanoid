@@ -51,7 +51,7 @@ public class Countdown : MonoBehaviour
         if (currentCorroutine != null)
         {
             StopCoroutine(currentCorroutine);
-            currentCorroutine=null;
+            currentCorroutine = null;
         }
         else
         {
@@ -94,6 +94,7 @@ public class Countdown : MonoBehaviour
                 UpdateTime(currentTime);
             }
         }
+        currentCorroutine = null;
         UpdateTime(currentTime);
         TimeOut();
     }

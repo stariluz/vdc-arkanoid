@@ -22,7 +22,6 @@ public class GameManager : MonoBehaviour
     {
         levelsManager.countdown.OnUpdateTime += UpdateTime;
         levelsManager.countdown.OnTimeOut += TimeOut;
-        audioManager = GetComponent<AudioManager>();
         StartGame();
     }
     void Disable()
@@ -118,6 +117,7 @@ public class GameManager : MonoBehaviour
 
     public Tuple<PlayersEnum, int> Score(PlayersEnum player)
     {
+        Debug.Log((player, audioManager));
         audioManager.OnScore();
         int score = players[playerInTurn].score;
         if (gameStatus == GameStatus.IN_PLAY)
@@ -140,7 +140,6 @@ public class GameManager : MonoBehaviour
             bool hasLost = players[playerInTurn].LoseLive();
             if (hasLost)
             {
-                uIManager.UpdateLives(playerInTurn, players[playerInTurn].lives);
                 GameOver(playerInTurn);
             }
             else
@@ -167,6 +166,7 @@ public class GameManager : MonoBehaviour
     {
         // Debug.Log(("DEV - GAME OVER"));
         audioManager.OnGameOver();
+        levelsManager.countdown.Stop();
         gameStatus = GameStatus.GAME_OVER_SCREEN;
         uIManager.UpdateScreen(gameStatus);
     }
@@ -179,6 +179,7 @@ public class GameManager : MonoBehaviour
         {
             // Debug.Log("DEV - GameManager - Win() - There's next level");
             gameStatus = GameStatus.NEXT_LEVEL_SCREEN;
+            uIManager.UpdateScreen(gameStatus);
         }
         else
         {

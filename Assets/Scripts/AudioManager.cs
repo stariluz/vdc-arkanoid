@@ -8,17 +8,18 @@ public class AudioManager : MonoBehaviour
     [SerializeField] AudioSource sfxSource;
 
     [Header("Music Clips")]
-    [SerializeField] AudioClip background;
-    [SerializeField] AudioClip background2;
+    public AudioClip background1;
+    public AudioClip background2;
 
     [Header("SFX Clips")]
-    [SerializeField] AudioClip winSound;
-    [SerializeField] AudioClip gameOverSound;
-    [SerializeField] AudioClip scoreSound;
+    public AudioClip winSound;
+    public AudioClip gameOverSound;
+    public AudioClip scoreSound;
 
     void Start(){
-        musicSource.clip=background;
+        musicSource.clip=background1;
         musicSource.Play();
+        musicSource.loop=true;
     }
     public void OnGameOver()
     {
@@ -35,11 +36,23 @@ public class AudioManager : MonoBehaviour
         sfxSource.clip = scoreSound;
         sfxSource.Play();
     }
+    float savedTime=0.0f;
+    float savedPauseTime=0.0f;
     public void OnPause(){
+        musicSource.Pause();
+        savedTime=musicSource.time;
 
+        musicSource.clip=background2;
+        musicSource.time=savedPauseTime;
+        musicSource.Play();
     }
     public void OnResume(){
+        musicSource.Pause();
+        savedPauseTime=musicSource.time;
 
+        musicSource.clip=background1;
+        musicSource.time=savedTime;
+        musicSource.Play();
     }
 }
 

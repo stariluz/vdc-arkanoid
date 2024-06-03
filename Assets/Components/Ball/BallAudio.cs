@@ -3,25 +3,25 @@ using System.Collections;
 
 public class BallAudio : MonoBehaviour
 {
-    [SerializeField] AudioSource audioSource;
+    [SerializeField] AudioSource sfxSource;
     [SerializeField] AudioClip paddleSound;
     [SerializeField] AudioClip wallSound;
 
     // Use this for initialization
     void Start()
 	{
-        audioSource = GetComponent<AudioSource>();
+        sfxSource = GetComponent<AudioSource>();
     }
 
-    public void onHitWall()
+    public void OnHitWall()
     {
-        audioSource.clip = wallSound;
-        audioSource.Play();
+        sfxSource.clip = wallSound;
+        sfxSource.Play();
     }
-    public void onHitPaddle()
+    public void OnHitPaddle()
     {
-        audioSource.clip = paddleSound;
-        audioSource.Play();
+        sfxSource.clip = paddleSound;
+        sfxSource.Play();
     }
 }
 

@@ -137,7 +137,7 @@ public class BallMovement : MonoBehaviour
                 ballRigidbody.velocity.y
             ).normalized);
             gameManager.SetCurrentPlayerInTurn(collision.gameObject.GetComponent<PaddleMovement>().player);
-            ballAudio.onHitPaddle();
+            ballAudio.OnHitPaddle();
         }
         else if (collision.gameObject.CompareTag("ExploitableBlock"))
         {
@@ -147,11 +147,11 @@ public class BallMovement : MonoBehaviour
             ).normalized);
             collision.gameObject.GetComponent<ExplotaibleBlock>().OnHit();
             Score(gameManager.playerInTurn);
-            ballAudio.onHitWall();
+            ballAudio.OnHitWall();
         }
         else
         {
-            ballAudio.onHitWall();
+            ballAudio.OnHitWall();
         }
     }
 
