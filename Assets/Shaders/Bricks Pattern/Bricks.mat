@@ -32,6 +32,10 @@ Material:
         m_Texture: {fileID: 2800000, guid: a0853c17d2709234aa6a5ea6f85b22c6, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _SampleTexture2D_cdea2943c05a4736a5b4aef1cec7e3db_Texture_1_Texture2D:
+        m_Texture: {fileID: 2800000, guid: 6279be7098a7298488c69cd576a4f47c, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _SecondaryTex:
         m_Texture: {fileID: 2800000, guid: a0853c17d2709234aa6a5ea6f85b22c6, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -97,7 +101,7 @@ Material:
     m_Colors:
     - _DoubleSidedConstants: {r: 1, g: 1, b: -1, a: 0}
     - _EmissionColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Offset: {r: 0.1, g: 0, b: 0, a: 0}
+    - _Offset: {r: 0, g: 0.1, b: 0, a: 0}
     - _Slicing: {r: 4, g: 8, b: 0, a: 0}
     - _Space: {r: 0.2, g: 0.3, b: 0, a: 0}
   m_BuildTextureStacks: []

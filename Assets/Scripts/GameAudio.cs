@@ -28,5 +28,11 @@ public class GameAudio : MonoBehaviour
         audioSource.clip = scoreSound;
         audioSource.Play();
     }
+    public void OnPause(){
+
+    }
+    public void OnResume(){
+
+    }
 }
 

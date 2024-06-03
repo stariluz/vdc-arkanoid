@@ -6,5 +6,6 @@ public enum GameStatus
     NEXT_LEVEL_SCREEN,
     WIN_SCREEN,
     GAME_OVER_SCREEN,
-    PAUSE_SCREEN
+    PAUSE_SCREEN,
+    TIME_OUT_SCREEN
 }

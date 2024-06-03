@@ -13,12 +13,13 @@ public class UIManager : MonoBehaviour
     [SerializedDictionary("Player", "PlayerUI")]
     public SerializedDictionary<PlayersEnum, PlayerUI> playerUI;
 
+    public GameObject gameDataUI;
+
     // public TMPro.TMP_Text winnerText;
     // Start is called before the first frame update
 
     public Tuple<PlayersEnum, int> UpdateScore(PlayersEnum player, int score)
     {
-        Debug.Log((player, score));
         playerUI[player].score.text = score.ToString();
         return new(player, score);
     }
@@ -26,6 +27,13 @@ public class UIManager : MonoBehaviour
     {
         playerUI[player].lives.text = lives.ToString();
         return new(player, lives);
+    }
+    public Tuple<PlayersEnum, int> UpdateCountdown(PlayersEnum player, int time)
+    {
+        int minutes = Mathf.FloorToInt(time / 60);
+        int seconds = Mathf.FloorToInt(time % 60);
+        playerUI[player].countdown.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+        return new(player, time);
     }
 
     public void ShowWinner(PlayersEnum player)
@@ -41,12 +49,18 @@ public class UIManager : MonoBehaviour
     {
         DeactivateOtherScreens(gameStatus);
         screens[gameStatus].SetActive(true);
+
+        if (Array.IndexOf(InGameUI.statusArray, gameStatus)!=-1){
+            gameDataUI.SetActive(true);
+        }else{
+            gameDataUI.SetActive(false);
+        }
     }
 
     private void DeactivateOtherScreens(GameStatus nextGameStatus)
     {
-        Debug.Log(("DEV -DeactivatingScreens"));
-        HashSet<GameStatus> gameStatusArray = new((GameStatus[]) Enum.GetValues(typeof(GameStatus)));
+        // Debug.Log(("DEV -DeactivatingScreens"));
+        HashSet<GameStatus> gameStatusArray = new((GameStatus[])Enum.GetValues(typeof(GameStatus)));
         gameStatusArray.Remove(nextGameStatus);
         foreach (GameStatus gameStatus in gameStatusArray)
         {

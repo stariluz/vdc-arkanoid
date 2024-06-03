@@ -20,15 +20,24 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        levelsManager.countdown.OnUpdateTime += UpdateTime;
+        levelsManager.countdown.OnTimeOut += TimeOut;
         gameAudio = GetComponent<GameAudio>();
         StartGame();
     }
+    void Disable()
+    {
+        levelsManager.countdown.OnUpdateTime -= UpdateTime;
+        levelsManager.countdown.OnTimeOut -= TimeOut;
+    }
+
     // Update is called once per frame
     void Update()
     {
 
     }
-    public Player GetPlayerInTurn(){
+    public Player GetPlayerInTurn()
+    {
         return players[playerInTurn];
     }
     public void StartGame()
@@ -38,33 +47,69 @@ public class GameManager : MonoBehaviour
         uIManager.UpdateScreen(gameStatus);
         players[playerInTurn].StartPlayer();
     }
-    public void Restart()
+    public void RestartGame()
     {
-        Debug.Log(("GAMEMANAGER RESTART"));
-        levelsManager.Restart();
+        // Debug.Log(("GAMEMANAGER RESTART"));
+        levelsManager.RestartGame();
         players[playerInTurn].Restart();
         ball.Restart(playerInTurn);
         StartGame();
     }
-
-    public void StartMatch()
+    public void Pause()
     {
-        players[PlayersEnum.PLAYER_1].score = 0;
-        uIManager.UpdateScore(PlayersEnum.PLAYER_1, 0);
+        // Debug.Log(("GAMEMANAGER PAUSE"));
+        levelsManager.Pause();
+        gameStatus = GameStatus.PAUSE_SCREEN;
+        uIManager.UpdateScreen(gameStatus);
+        players[playerInTurn].Pause();
+        ball.Pause();
+        gameAudio.OnPause();
+    }
 
-        uIManager.UpdateLives(PlayersEnum.PLAYER_1, players[PlayersEnum.PLAYER_1].lives);
-
+    public void Resume()
+    {
+        // Debug.Log(("GAMEMANAGER RESUME"));
+        levelsManager.Resume();
         gameStatus = GameStatus.IN_PLAY;
         uIManager.UpdateScreen(gameStatus);
+        players[playerInTurn].Resume();
+        ball.Resume();
+        gameAudio.OnResume();
+    }
+
+    public void StartGameLevel()
+    {
+        InitBoard();
+        RestartBoard();
+        ball.StartGameLevel(playerInTurn);
+    }
+    public void NextAttempt()
+    {
+        RestartBoard();
+        players[PlayersEnum.PLAYER_1].Restart();
+        ball.Restart(playerInTurn);
+    }
+    public void InitBoard(){
+        players[PlayersEnum.PLAYER_1].score = 0;
+        uIManager.UpdateScore(PlayersEnum.PLAYER_1, 0);
+        gameStatus = GameStatus.IN_PLAY;
+        uIManager.UpdateScreen(gameStatus);
+        levelsManager.countdown.SetAvailableTime();
+    }
+    public void RestartBoard(){
+        uIManager.UpdateLives(PlayersEnum.PLAYER_1, players[PlayersEnum.PLAYER_1].lives);
 
         int option = new System.Random().Next(1);
         if (option == 1)
         {
             playerInTurn = PlayersEnum.PLAYER_1;
         }
-        ball.Restart(playerInTurn);
     }
-
+    public void FirstLaunchBall()
+    {
+        Debug.Log("First Launch");
+        levelsManager.countdown.Run();
+    }
 
     public void SetCurrentPlayerInTurn(PlayersEnum player)
     {
@@ -92,12 +137,12 @@ public class GameManager : MonoBehaviour
 
     public void LoseLive()
     {
-        Debug.Log(gameStatus);
         if (gameStatus == GameStatus.IN_PLAY)
         {
             bool hasLost = players[playerInTurn].LoseLive();
             if (hasLost)
             {
+                uIManager.UpdateLives(playerInTurn, players[playerInTurn].lives);
                 GameOver(playerInTurn);
             }
             else
@@ -106,12 +151,24 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        RestartMatch();
+        NextAttempt();
     }
 
+    public void UpdateTime(int time)
+    {
+        uIManager.UpdateCountdown(playerInTurn, time);
+    }
+
+    public void TimeOut()
+    {
+        // Debug.Log(("DEV - TIME OUT"));
+        gameAudio.onGameOver();
+        gameStatus = GameStatus.TIME_OUT_SCREEN;
+        uIManager.UpdateScreen(gameStatus);
+    }
     public void GameOver(PlayersEnum player)
     {
-        Debug.Log(("DEV - GAME OVER"));
+        // Debug.Log(("DEV - GAME OVER"));
         gameAudio.onGameOver();
         gameStatus = GameStatus.GAME_OVER_SCREEN;
         uIManager.UpdateScreen(gameStatus);
@@ -120,29 +177,23 @@ public class GameManager : MonoBehaviour
     public void Win(PlayersEnum player)
     {
         gameAudio.onGameWin();
+        levelsManager.countdown.Stop();
         if (levelsManager.HasNextLevel())
         {
-            Debug.Log("DEV - GameManager - Win() - There's next level");
+            // Debug.Log("DEV - GameManager - Win() - There's next level");
             gameStatus = GameStatus.NEXT_LEVEL_SCREEN;
-            uIManager.UpdateScreen(gameStatus);
         }
         else
         {
-            Debug.Log("DEV - GameManager - Win() - There's no next level");
+            // Debug.Log("DEV - GameManager - Win() - There's no next level");
             gameStatus = GameStatus.WIN_SCREEN;
             uIManager.UpdateScreen(gameStatus);
         }
     }
 
-    public void RestartMatch()
-    {
-        players[PlayersEnum.PLAYER_1].Restart();
-        ball.Restart(playerInTurn);
-    }
-
     public void NextLevel()
     {
         levelsManager.NextLevel();
-        StartMatch();
+        StartGameLevel();
     }
 }

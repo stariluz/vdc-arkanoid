@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 
 public class BallMovement : MonoBehaviour
 {
@@ -15,6 +16,8 @@ public class BallMovement : MonoBehaviour
     BallAudio ballAudio;
     public GameManager gameManager;
     System.Random random = new();
+    public delegate void ExecuteBallUpdate();
+    public ExecuteBallUpdate executeBallUpdate;
     public string launchAxis = "LaunchBall";
 
     // Start is called before the first frame update
@@ -23,45 +26,57 @@ public class BallMovement : MonoBehaviour
         ballRigidbody = GetComponent<Rigidbody2D>();
         ballAudio = GetComponent<BallAudio>();
         random = new System.Random();
-        StartMatch(gameManager.playerInTurn);
+        InitBall();
     }
 
-    public delegate void ExecuteBallUpdate();
-    public ExecuteBallUpdate executeBallUpdate;
-
+    public void InitBall(){
+        StartState(gameManager.playerInTurn);
+    }
     // Update is called once per frame
     void Update()
     {
         executeBallUpdate();
     }
 
-    void FollowingPlayerUpdate()
-    {
-        /*Vector2 newPosition = gameManager.players[gameManager.playerInTurn].paddleMovement.GetPosition();
-        newPosition.y += 2;
-        ballRigidbody.position = newPosition;*/
-        bool launch = MobileLauch();
-        if (launch == true)
-        {
-            Launch(gameManager.playerInTurn);
-        }
-
-    }
     private bool PCLaunch()
     {
         return Input.GetAxis(launchAxis) > 0;
     }
     private bool MobileLauch()
     {
-        return Input.touchCount > 0 && gameManager.GetPlayerInTurn().paddleMovement.IsMoving();
+        return Input.touchCount > 0 && !gameManager.GetPlayerInTurn().paddleMovement.IsMoving();
+    }
+
+    void FollowingPlayerUpdate()
+    {
+        Vector2 newPosition = gameManager.players[gameManager.playerInTurn].paddleMovement.GetPosition();
+        newPosition.y += 2;
+        ballRigidbody.position = newPosition;
+        bool launch = MobileLauch();
+        if (launch == true)
+        {
+            if(isFirstLaunch){
+                isFirstLaunch=false;
+                gameManager.FirstLaunchBall();
+            }
+            Launch(gameManager.playerInTurn);
+        }
     }
 
     void LaunchedUpdate()
     {
     }
 
-    public void StartMatch(PlayersEnum player)
+    void PauseUpdate()
     {
+    }
+    bool isFirstLaunch=false;
+    public void StartGameLevel(PlayersEnum player)
+    {
+        isFirstLaunch=true;
+        StartState(player);
+    }
+    public void StartState(PlayersEnum player){
         currentSpeed = speed;
         ballRigidbody.isKinematic = true;
         gameObject.transform.SetParent(gameManager.players[player].gameObject.transform);
@@ -72,9 +87,21 @@ public class BallMovement : MonoBehaviour
     public void Restart(PlayersEnum player)
     {
         ballRigidbody.velocity = new Vector2(0, 0);
-        StartMatch(player);
+        StartState(player);
     }
 
+    private Vector2 savedVelocity;
+    private ExecuteBallUpdate savedUpdate;
+    public void Pause(){
+        savedVelocity=ballRigidbody.velocity;
+        ballRigidbody.velocity=Vector2.zero;
+        savedUpdate=executeBallUpdate;
+        executeBallUpdate=PauseUpdate;
+    }
+    public void Resume(){
+        ballRigidbody.velocity=savedVelocity;
+        executeBallUpdate=savedUpdate;
+    }
     public void Launch(PlayersEnum player)
     {
         // Generate a random floating-point number between -1 and 1
@@ -96,9 +123,9 @@ public class BallMovement : MonoBehaviour
     {
         currentSpeed = Math.Min(currentSpeed * 1 + velocityMultiplier, maxSpeed);
         ballRigidbody.velocity = new Vector2(direction.x * currentSpeed, direction.y * currentSpeed);
-        Debug.Log(("VELOCTY", ballRigidbody.velocity));
-        Debug.Log(("DIRECTION", direction));
-        Debug.Log(("CURRENT SPEED", currentSpeed));
+        // Debug.Log(("VELOCTY", ballRigidbody.velocity));
+        // Debug.Log(("DIRECTION", direction));
+        // Debug.Log(("CURRENT SPEED", currentSpeed));
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -130,10 +157,10 @@ public class BallMovement : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        Debug.Log("TRIGGER");
+        // Debug.Log("TRIGGER");
         if (collider.gameObject.CompareTag("DeadZone"))
         {
-            Debug.Log("LOSELIVE");
+            // Debug.Log("LOSELIVE");
             LoseLive();
         }
     }

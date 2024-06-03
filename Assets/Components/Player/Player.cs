@@ -33,6 +33,7 @@ public class Player : MonoBehaviour
         bool hasLost = false;
 		playerAudio.onLoseLive();
         lives--;
+        Debug.Log(lives);
         if (lives == -1)
         {
             hasLost = true;
@@ -42,7 +43,14 @@ public class Player : MonoBehaviour
     public void Restart()
     {
 		paddleMovement.Restart();
-        lives = initialLives;
+    }
+    public void Pause()
+    {
+        paddleMovement.Pause();
+    }
+    public void Resume()
+    {
+        paddleMovement.Resume();
     }
 }
 
