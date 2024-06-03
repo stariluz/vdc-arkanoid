@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour
     public PlayersEnum playerInTurn = PlayersEnum.PLAYER_1;
     public BallMovement ball;
     public GameStatus gameStatus = GameStatus.START_SCREEN;
-    public GameAudio gameAudio;
+    public AudioManager audioManager;
     public LevelsManager levelsManager;
 
     // Start is called before the first frame update
@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviour
     {
         levelsManager.countdown.OnUpdateTime += UpdateTime;
         levelsManager.countdown.OnTimeOut += TimeOut;
-        gameAudio = GetComponent<GameAudio>();
+        audioManager = GetComponent<AudioManager>();
         StartGame();
     }
     void Disable()
@@ -63,7 +63,7 @@ public class GameManager : MonoBehaviour
         uIManager.UpdateScreen(gameStatus);
         players[playerInTurn].Pause();
         ball.Pause();
-        gameAudio.OnPause();
+        audioManager.OnPause();
     }
 
     public void Resume()
@@ -74,7 +74,7 @@ public class GameManager : MonoBehaviour
         uIManager.UpdateScreen(gameStatus);
         players[playerInTurn].Resume();
         ball.Resume();
-        gameAudio.OnResume();
+        audioManager.OnResume();
     }
 
     public void StartGameLevel()
@@ -86,24 +86,23 @@ public class GameManager : MonoBehaviour
     public void NextAttempt()
     {
         RestartBoard();
-        players[PlayersEnum.PLAYER_1].Restart();
+        players[playerInTurn].Restart();
         ball.Restart(playerInTurn);
     }
     public void InitBoard(){
-        players[PlayersEnum.PLAYER_1].score = 0;
-        uIManager.UpdateScore(PlayersEnum.PLAYER_1, 0);
+        players[playerInTurn].score = 0;
+        uIManager.UpdateScore(playerInTurn, 0);
         gameStatus = GameStatus.IN_PLAY;
         uIManager.UpdateScreen(gameStatus);
         levelsManager.countdown.SetAvailableTime();
     }
     public void RestartBoard(){
-        uIManager.UpdateLives(PlayersEnum.PLAYER_1, players[PlayersEnum.PLAYER_1].lives);
-
-        int option = new System.Random().Next(1);
-        if (option == 1)
-        {
-            playerInTurn = PlayersEnum.PLAYER_1;
-        }
+        uIManager.UpdateLives(playerInTurn, players[playerInTurn].lives);
+        // int option = new System.Random().Next(1);
+        // if (option == 1)
+        // {
+        //     playerInTurn = playerInTurn;
+        // }
     }
     public void FirstLaunchBall()
     {
@@ -119,8 +118,7 @@ public class GameManager : MonoBehaviour
 
     public Tuple<PlayersEnum, int> Score(PlayersEnum player)
     {
-        gameAudio.onScore();
-
+        audioManager.OnScore();
         int score = players[playerInTurn].score;
         if (gameStatus == GameStatus.IN_PLAY)
         {
@@ -148,10 +146,9 @@ public class GameManager : MonoBehaviour
             else
             {
                 uIManager.UpdateLives(playerInTurn, players[playerInTurn].lives);
+                NextAttempt();
             }
         }
-
-        NextAttempt();
     }
 
     public void UpdateTime(int time)
@@ -162,21 +159,21 @@ public class GameManager : MonoBehaviour
     public void TimeOut()
     {
         // Debug.Log(("DEV - TIME OUT"));
-        gameAudio.onGameOver();
+        audioManager.OnGameOver();
         gameStatus = GameStatus.TIME_OUT_SCREEN;
         uIManager.UpdateScreen(gameStatus);
     }
     public void GameOver(PlayersEnum player)
     {
         // Debug.Log(("DEV - GAME OVER"));
-        gameAudio.onGameOver();
+        audioManager.OnGameOver();
         gameStatus = GameStatus.GAME_OVER_SCREEN;
         uIManager.UpdateScreen(gameStatus);
     }
 
     public void Win(PlayersEnum player)
     {
-        gameAudio.onGameWin();
+        audioManager.OnGameWin();
         levelsManager.countdown.Stop();
         if (levelsManager.HasNextLevel())
         {
