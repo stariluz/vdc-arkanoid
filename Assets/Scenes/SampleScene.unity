@@ -154,8 +154,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   musicSource: {fileID: 779102932}
   sfxSource: {fileID: 2033043397}
-  background1: {fileID: 8300000, guid: a144c6d2b8bb1a0468713f392d581c39, type: 3}
-  background2: {fileID: 8300000, guid: fc3ff658e1f50ac4b9e4653b4e644def, type: 3}
+  background1: {fileID: 8300000, guid: d69426f7616e4504e9c5042026dbc842, type: 3}
+  background2: {fileID: 8300000, guid: a57d4909bc1f2ce47b52ff4e39d6a21c, type: 3}
   winSound: {fileID: 8300000, guid: d89e64629def3430da4e8e71a5918b43, type: 3}
   gameOverSound: {fileID: 8300000, guid: 94c14b4aa3f7142acbb9c93cf530ddd6, type: 3}
   scoreSound: {fileID: 8300000, guid: 1842b1039aa1747658770ee850bb3f48, type: 3}
@@ -503,11 +503,11 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 163980663}
   - {fileID: 270377848}
   - {fileID: 1273839230}
   - {fileID: 1234341614}
   - {fileID: 2029518967}
+  - {fileID: 163980663}
   - {fileID: 96674732}
   - {fileID: 1559047775}
   - {fileID: 125972896}
@@ -675,7 +675,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 15
+  orthographic size: 19
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2

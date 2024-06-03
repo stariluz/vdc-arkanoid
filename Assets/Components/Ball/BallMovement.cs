@@ -53,6 +53,7 @@ public class BallMovement : MonoBehaviour
         newPosition.y += 2;
         ballRigidbody.position = newPosition;
         bool launch = MobileLauch();
+        // bool launch = PCLaunch();
         if (launch == true)
         {
             if(isFirstLaunch){

@@ -28,6 +28,7 @@ public class PaddleMovement : MonoBehaviour
         if (!isPaused)
         {
             MobileMovement();
+            // PCMovement();
         }
     }
     void PCMovement()
