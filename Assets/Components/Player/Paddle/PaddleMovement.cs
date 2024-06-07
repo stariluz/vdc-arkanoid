@@ -2,9 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Stariluz.GameControl;
 
 public class PaddleMovement : MonoBehaviour
 {
+    private class PaddleMovementBehaviour:MultiplatformBehaviour<int>{
+        
+    }
     public float speed = 4f;
     public float maxVelocity = 15f;
 
