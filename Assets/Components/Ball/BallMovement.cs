@@ -4,9 +4,11 @@ using UnityEngine;
 using System;
 using Unity.Mathematics;
 using Unity.VisualScripting;
+using Stariluz.GameControl;
 
 public class BallMovement : MonoBehaviour
 {
+
     public float maxSpeed;
     public float speed;
     private float currentSpeed;
@@ -19,17 +21,23 @@ public class BallMovement : MonoBehaviour
     public delegate void ExecuteBallUpdate();
     public ExecuteBallUpdate executeBallUpdate;
     public string launchAxis = "LaunchBall";
+    public BallLauchBehaviour launchInput;
 
+    BallMovement(){
+        launchInput = new BallLauchBehaviour(this);
+    }
     // Start is called before the first frame update
     void Start()
     {
+        launchInput=new BallLauchBehaviour(this);
         ballRigidbody = GetComponent<Rigidbody2D>();
         ballAudio = GetComponent<BallAudio>();
         random = new System.Random();
         InitBall();
     }
 
-    public void InitBall(){
+    public void InitBall()
+    {
         StartState(gameManager.playerInTurn);
     }
     // Update is called once per frame
@@ -38,26 +46,19 @@ public class BallMovement : MonoBehaviour
         executeBallUpdate();
     }
 
-    private bool PCLaunch()
-    {
-        return Input.GetAxis(launchAxis) > 0;
-    }
-    private bool MobileLauch()
-    {
-        return Input.touchCount > 0 && !gameManager.GetPlayerInTurn().paddleMovement.IsMoving();
-    }
 
     void FollowingPlayerUpdate()
     {
         Vector2 newPosition = gameManager.players[gameManager.playerInTurn].paddleMovement.GetPosition();
         newPosition.y += 2;
         ballRigidbody.position = newPosition;
-        bool launch = MobileLauch();
+        bool launch = launchInput.ExecuteBehaviour();
         // bool launch = PCLaunch();
         if (launch == true)
         {
-            if(isFirstLaunch){
-                isFirstLaunch=false;
+            if (isFirstLaunch)
+            {
+                isFirstLaunch = false;
                 gameManager.FirstLaunchBall();
             }
             Launch(gameManager.playerInTurn);
@@ -71,13 +72,14 @@ public class BallMovement : MonoBehaviour
     void PauseUpdate()
     {
     }
-    bool isFirstLaunch=false;
+    bool isFirstLaunch = false;
     public void StartGameLevel(PlayersEnum player)
     {
-        isFirstLaunch=true;
+        isFirstLaunch = true;
         StartState(player);
     }
-    public void StartState(PlayersEnum player){
+    public void StartState(PlayersEnum player)
+    {
         currentSpeed = speed;
         ballRigidbody.isKinematic = true;
         gameObject.transform.SetParent(gameManager.players[player].gameObject.transform);
@@ -93,15 +95,17 @@ public class BallMovement : MonoBehaviour
 
     private Vector2 savedVelocity;
     private ExecuteBallUpdate savedUpdate;
-    public void Pause(){
-        savedVelocity=ballRigidbody.velocity;
-        ballRigidbody.velocity=Vector2.zero;
-        savedUpdate=executeBallUpdate;
-        executeBallUpdate=PauseUpdate;
+    public void Pause()
+    {
+        savedVelocity = ballRigidbody.velocity;
+        ballRigidbody.velocity = Vector2.zero;
+        savedUpdate = executeBallUpdate;
+        executeBallUpdate = PauseUpdate;
     }
-    public void Resume(){
-        ballRigidbody.velocity=savedVelocity;
-        executeBallUpdate=savedUpdate;
+    public void Resume()
+    {
+        ballRigidbody.velocity = savedVelocity;
+        executeBallUpdate = savedUpdate;
     }
     public void Launch(PlayersEnum player)
     {
@@ -175,5 +179,27 @@ public class BallMovement : MonoBehaviour
     void Score(PlayersEnum player)
     {
         gameManager.Score(player);
+    }
+
+    public class BallLauchBehaviour : MultiplatformBehaviour<bool>
+    {
+        private BallMovement gameObject;
+        public BallLauchBehaviour(BallMovement gameObject)
+        {
+            this.gameObject = gameObject;
+        }
+        public override bool PCBehaviour()
+        {
+            return Input.GetAxis(gameObject.launchAxis) > 0;
+        }
+        public override bool TouchMobileBehaviour()
+        {
+            return Input.touchCount > 0 && !gameObject.gameManager.GetPlayerInTurn().paddleMovement.isMoving;
+        }
+        public override bool ScreenButtonsBehaviour()
+        {
+            throw new System.NotImplementedException();
+            // return false;
+        }
     }
 }
