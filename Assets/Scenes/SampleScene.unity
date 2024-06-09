@@ -1800,8 +1800,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   paddleMovement: {fileID: 1873833420}
-  selectedControl: 0
-  camera: {fileID: 519420031}
+  ballMovement: {fileID: 1039479557}
+  selectedControl: 1
+  gameCamera: {fileID: 519420031}
 --- !u!1 &1873833415
 GameObject:
   m_ObjectHideFlags: 0

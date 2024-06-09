@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Stariluz.GameControl;
+using UnityEngine.EventSystems;
 
 public class PaddleMovement : MonoBehaviour
 {
@@ -15,7 +16,8 @@ public class PaddleMovement : MonoBehaviour
     private Vector2 initialPosition;
     public PaddleMovementBehaviour movementInput;
 
-    PaddleMovement(){
+    PaddleMovement()
+    {
         movementInput = new PaddleMovementBehaviour(this);
     }
     // Start is called before the first frame update
@@ -91,7 +93,7 @@ public class PaddleMovement : MonoBehaviour
             if (Input.touchCount > 0)
             {
                 Touch touch = Input.GetTouch(0);
-                if (touch.phase == TouchPhase.Moved)
+                if (touch.phase == TouchPhase.Moved && !EventSystem.current.IsPointerOverGameObject(touch.fingerId))
                 {
                     gameObject.isMoving = true;
                     gameObject.rb.velocity = new Vector2(
@@ -108,10 +110,40 @@ public class PaddleMovement : MonoBehaviour
             }
             return 0;
         }
+        private Vector2 leftTouchLocStart;
+        private Vector2 rightTouchLocStart;
         public override int ScreenButtonsBehaviour()
         {
-            throw new System.NotImplementedException();
-            // return 0;
+            if (Input.touchCount > 0)
+            {
+                Touch[] myTouches = Input.touches;
+                for (int i = 0; i < Input.touchCount; i++)
+                {
+                    Touch myTouch = Input.GetTouch(i);
+
+                    //Set start postition
+                    if (myTouch.phase == TouchPhase.Began && !EventSystem.current.IsPointerOverGameObject(myTouch.fingerId))
+                    {
+                        //Left Thumb Stick
+                        if (myTouch.position.x < Screen.width / 2)
+                        {
+                            leftTouchLocStart = new Vector2(myTouch.position.x, myTouch.position.y);
+                            // thumbStick_L.transform.position = (leftTouchLocStart);
+                            // thumbStick_L.SetActive(true);
+                        }
+
+                        //Right Thumb Stick
+                        if (myTouch.position.x > Screen.width / 2)
+                        {
+                            rightTouchLocStart = new Vector2(myTouch.position.x, myTouch.position.y);
+                            // thumbStick_R.transform.position = (rightTouchLocStart);
+                            // thumbStick_R.SetActive(true);
+                        }
+                    }
+                }
+            }
+            return 0;
         }
     }
+
 }

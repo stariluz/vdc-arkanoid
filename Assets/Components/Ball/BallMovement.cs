@@ -21,15 +21,15 @@ public class BallMovement : MonoBehaviour
     public delegate void ExecuteBallUpdate();
     public ExecuteBallUpdate executeBallUpdate;
     public string launchAxis = "LaunchBall";
-    public BallLauchBehaviour launchInput;
+    public BallLauchCheckBehaviour launchCheckInput;
 
-    BallMovement(){
-        launchInput = new BallLauchBehaviour(this);
+    BallMovement()
+    {
+        launchCheckInput = new BallLauchCheckBehaviour(this);
     }
     // Start is called before the first frame update
     void Start()
     {
-        launchInput=new BallLauchBehaviour(this);
         ballRigidbody = GetComponent<Rigidbody2D>();
         ballAudio = GetComponent<BallAudio>();
         random = new System.Random();
@@ -52,7 +52,7 @@ public class BallMovement : MonoBehaviour
         Vector2 newPosition = gameManager.players[gameManager.playerInTurn].paddleMovement.GetPosition();
         newPosition.y += 2;
         ballRigidbody.position = newPosition;
-        bool launch = launchInput.ExecuteBehaviour();
+        bool launch = launchCheckInput.ExecuteBehaviour();
         // bool launch = PCLaunch();
         if (launch == true)
         {
@@ -109,7 +109,6 @@ public class BallMovement : MonoBehaviour
     }
     public void Launch(PlayersEnum player)
     {
-        // Generate a random floating-point number between -1 and 1
         float yRandom = -1;
         float xRandom = (float)(random.NextDouble() * 2) - 1;
 
@@ -181,10 +180,10 @@ public class BallMovement : MonoBehaviour
         gameManager.Score(player);
     }
 
-    public class BallLauchBehaviour : MultiplatformBehaviour<bool>
+    public class BallLauchCheckBehaviour : MultiplatformBehaviour<bool>
     {
         private BallMovement gameObject;
-        public BallLauchBehaviour(BallMovement gameObject)
+        public BallLauchCheckBehaviour(BallMovement gameObject)
         {
             this.gameObject = gameObject;
         }
@@ -192,9 +191,27 @@ public class BallMovement : MonoBehaviour
         {
             return Input.GetAxis(gameObject.launchAxis) > 0;
         }
+        private bool hasMoved = true;
         public override bool TouchMobileBehaviour()
         {
-            return Input.touchCount > 0 && !gameObject.gameManager.GetPlayerInTurn().paddleMovement.isMoving;
+            if (Input.touchCount > 0)
+            {
+
+                Touch touch = Input.GetTouch(0);
+                if (touch.phase == TouchPhase.Began)
+                {
+                    hasMoved = false;
+                }
+                else if (touch.phase == TouchPhase.Moved)
+                {
+                    hasMoved = true;
+                }
+                else if (touch.phase == TouchPhase.Ended)
+                {
+                    return !hasMoved;
+                }
+            }
+            return false;
         }
         public override bool ScreenButtonsBehaviour()
         {

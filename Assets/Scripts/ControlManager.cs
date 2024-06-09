@@ -6,13 +6,15 @@ using Stariluz.GameControl;
 public class ControlsManager : MonoBehaviour
 {
     public PaddleMovement paddleMovement;
+    public BallMovement ballMovement;
 
     public ControlsEnum selectedControl = ControlsEnum.PC;
-    public Camera camera;
+    public Camera gameCamera;
     // Start is called before the first frame update
     void Start()
     {
         paddleMovement.movementInput.SetBehaviourToExecute(selectedControl);
+        ballMovement.launchCheckInput.SetBehaviourToExecute(selectedControl);
         AdjustCamera(selectedControl);
     }
     void ChangeControls()
@@ -25,17 +27,17 @@ public class ControlsManager : MonoBehaviour
         {
             case ControlsEnum.PC:
                 {
-                    camera.orthographicSize = 19f;
+                    gameCamera.orthographicSize = 19f;
                     break;
                 }
             case ControlsEnum.Touch:
                 {
-                    camera.orthographicSize = 15f;
+                    gameCamera.orthographicSize = 15f;
                     break;
                 }
             case ControlsEnum.ScreenButtons:
                 {
-                    camera.orthographicSize = 15f;
+                    gameCamera.orthographicSize = 15f;
                     break;
                 }
         }

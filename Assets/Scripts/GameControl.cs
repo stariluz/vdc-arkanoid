@@ -1,3 +1,4 @@
+using UnityEngine;
 namespace Stariluz.GameControl
 {
     public abstract class MultiplatformBehaviour<T>
