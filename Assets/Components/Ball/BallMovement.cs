@@ -5,6 +5,9 @@ using System;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using Stariluz.GameControl;
+using UnityEngine.EventSystems;
+using System.Linq;
+using UnityEngine.UI;
 
 public class BallMovement : MonoBehaviour
 {
@@ -20,20 +23,28 @@ public class BallMovement : MonoBehaviour
     System.Random random = new();
     public delegate void ExecuteBallUpdate();
     public ExecuteBallUpdate executeBallUpdate;
-    public string launchAxis = "LaunchBall";
-    public BallLauchCheckBehaviour launchCheckInput;
+    public BallLaunchAddListenerBehaviour launchAddListener;
+    public BallLaunchRemoveListenerBehaviour launchRemoveListener;
+    public BallStartBehaviour launchStart;
 
     BallMovement()
     {
-        launchCheckInput = new BallLauchCheckBehaviour(this);
+        launchAddListener = new BallLaunchAddListenerBehaviour(this);
+        launchRemoveListener = new BallLaunchRemoveListenerBehaviour(this);
+        launchStart = new BallStartBehaviour(this);
     }
     // Start is called before the first frame update
     void Start()
     {
+        launchAddListener.ExecuteBehaviour();
         ballRigidbody = GetComponent<Rigidbody2D>();
         ballAudio = GetComponent<BallAudio>();
         random = new System.Random();
         InitBall();
+    }
+    void OnDisable()
+    {
+        launchRemoveListener.ExecuteBehaviour();
     }
 
     public void InitBall()
@@ -46,23 +57,11 @@ public class BallMovement : MonoBehaviour
         executeBallUpdate();
     }
 
-
     void FollowingPlayerUpdate()
     {
         Vector2 newPosition = gameManager.players[gameManager.playerInTurn].paddleMovement.GetPosition();
         newPosition.y += 2;
         ballRigidbody.position = newPosition;
-        bool launch = launchCheckInput.ExecuteBehaviour();
-        // bool launch = PCLaunch();
-        if (launch == true)
-        {
-            if (isFirstLaunch)
-            {
-                isFirstLaunch = false;
-                gameManager.FirstLaunchBall();
-            }
-            Launch(gameManager.playerInTurn);
-        }
     }
 
     void LaunchedUpdate()
@@ -80,6 +79,7 @@ public class BallMovement : MonoBehaviour
     }
     public void StartState(PlayersEnum player)
     {
+        launchStart.ExecuteBehaviour();
         currentSpeed = speed;
         ballRigidbody.isKinematic = true;
         gameObject.transform.SetParent(gameManager.players[player].gameObject.transform);
@@ -107,15 +107,15 @@ public class BallMovement : MonoBehaviour
         ballRigidbody.velocity = savedVelocity;
         executeBallUpdate = savedUpdate;
     }
-    public void Launch(PlayersEnum player)
+    public void Launch()
     {
-        float yRandom = -1;
-        float xRandom = (float)(random.NextDouble() * 2) - 1;
-
-        if (player == PlayersEnum.PLAYER_1)
+        if (isFirstLaunch)
         {
-            yRandom = 1;
+            isFirstLaunch = false;
+            gameManager.FirstLaunchBall();
         }
+        float yRandom = 1;
+        float xRandom = (float)(random.NextDouble() * 2) - 1;
 
         ballRigidbody.isKinematic = false;
         gameObject.transform.SetParent(null);
@@ -180,43 +180,78 @@ public class BallMovement : MonoBehaviour
         gameManager.Score(player);
     }
 
-    public class BallLauchCheckBehaviour : MultiplatformBehaviour<bool>
+    [SerializeField]
+    KeyListener keyListener;
+    void HandleKeyDown(KeyCode keyCode)
+    {
+        if (keyCode == KeyCode.Space) Launch();
+    }
+    [SerializeField]
+    Button launchButton;
+    void HandleUITouch()
+    {
+        launchButton.gameObject.SetActive(false);
+        Launch();
+    }
+    public class BallLaunchAddListenerBehaviour : MultiplatformBehaviour
     {
         private BallMovement gameObject;
-        public BallLauchCheckBehaviour(BallMovement gameObject)
+        public BallLaunchAddListenerBehaviour(BallMovement gameObject)
         {
             this.gameObject = gameObject;
         }
-        public override bool PCBehaviour()
+        public override void PCBehaviour()
         {
-            return Input.GetAxis(gameObject.launchAxis) > 0;
+            gameObject.keyListener.OnKeyDown -= gameObject.HandleKeyDown;
         }
-        private bool hasMoved = true;
-        public override bool TouchMobileBehaviour()
+        public override void TouchMobileBehaviour()
         {
-            if (Input.touchCount > 0)
-            {
+            gameObject.launchButton.onClick.AddListener(gameObject.HandleUITouch);
+        }
+        public override void ScreenButtonsBehaviour()
+        {
+            gameObject.launchButton.onClick.AddListener(gameObject.HandleUITouch);
+        }
+    }
+    public class BallLaunchRemoveListenerBehaviour : MultiplatformBehaviour
+    {
+        private BallMovement gameObject;
+        public BallLaunchRemoveListenerBehaviour(BallMovement gameObject)
+        {
+            this.gameObject = gameObject;
+        }
 
-                Touch touch = Input.GetTouch(0);
-                if (touch.phase == TouchPhase.Began)
-                {
-                    hasMoved = false;
-                }
-                else if (touch.phase == TouchPhase.Moved)
-                {
-                    hasMoved = true;
-                }
-                else if (touch.phase == TouchPhase.Ended)
-                {
-                    return !hasMoved;
-                }
-            }
-            return false;
-        }
-        public override bool ScreenButtonsBehaviour()
+        public override void PCBehaviour()
         {
-            throw new System.NotImplementedException();
-            // return false;
+            gameObject.keyListener.OnKeyDown -= gameObject.HandleKeyDown;
+        }
+        public override void TouchMobileBehaviour()
+        {
+            gameObject.launchButton.onClick.RemoveListener(gameObject.HandleUITouch);
+        }
+        public override void ScreenButtonsBehaviour()
+        {
+            gameObject.launchButton.onClick.RemoveListener(gameObject.HandleUITouch);
+        }
+    }
+    public class BallStartBehaviour : MultiplatformBehaviour
+    {
+        private BallMovement gameObject;
+        public BallStartBehaviour(BallMovement gameObject)
+        {
+            this.gameObject = gameObject;
+        }
+
+        public override void PCBehaviour()
+        {
+        }
+        public override void TouchMobileBehaviour()
+        {
+            gameObject.launchButton.gameObject.SetActive(false);
+        }
+        public override void ScreenButtonsBehaviour()
+        {
+            gameObject.launchButton.gameObject.SetActive(false);
         }
     }
 }

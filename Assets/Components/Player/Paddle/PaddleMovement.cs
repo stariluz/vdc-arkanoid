@@ -1,39 +1,47 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Stariluz.GameControl;
-using UnityEngine.EventSystems;
 
 public class PaddleMovement : MonoBehaviour
 {
     public float speed = 4f;
+    public float unspeedRate = 1f;
     public float maxVelocity = 15f;
 
     private Rigidbody2D rb;
     public PlayersEnum player;
-    private string inputAxis = "Horizontal";
     private Vector2 initialPosition;
-    public PaddleMovementBehaviour movementInput;
+    [SerializeReference]
+    public PaddleMovementBehaviour movementInput = new PaddleMovementBehaviour();
 
-    PaddleMovement()
-    {
-        movementInput = new PaddleMovementBehaviour(this);
-    }
     // Start is called before the first frame update
     void Start()
     {
         initialPosition = gameObject.transform.position;
         rb = GetComponent<Rigidbody2D>();
-        inputAxis = "Horizontal";
     }
 
     // Update is called once per frame
-    void Update()
+    float lastMovementX = 0;
+    void FixedUpdate()
     {
         if (!isPaused)
         {
-            movementInput.ExecuteBehaviour();
+            float movementX = movementInput.ExecuteBehaviour();
+            if (movementX != 0)
+            {
+                lastMovementX = movementX;
+                isMoving = true;
+            }
+            else
+            {
+                isMoving = false;
+                lastMovementX = lastMovementX != 0 ? lastMovementX / (1 + unspeedRate / 10) : lastMovementX;
+            }
+            rb.velocity = new Vector2(
+                Math.Clamp(lastMovementX * speed, -maxVelocity, maxVelocity),
+                rb.velocity.y
+            );
         }
     }
     private bool _isMoving = false;
@@ -65,84 +73,24 @@ public class PaddleMovement : MonoBehaviour
     }
 
 
-    public class PaddleMovementBehaviour : MultiplatformBehaviour<int>
+    [Serializable]
+    public class PaddleMovementBehaviour : MultiplatformBehaviour<float>
     {
-        private PaddleMovement gameObject;
-        public PaddleMovementBehaviour(PaddleMovement gameObject)
+        public string inputAxis = "Horizontal";
+        public override float PCBehaviour()
         {
-            this.gameObject = gameObject;
-        }
-        public override int PCBehaviour()
-        {
-            float movement = Input.GetAxis(gameObject.inputAxis);
-            if (movement != 0)
-            {
-                gameObject.isMoving = true;
-                gameObject.rb.velocity = new Vector2(movement * gameObject.speed, gameObject.rb.velocity.y);
-            }
-            else
-            {
-                gameObject.isMoving = false;
-            }
-            return 0;
+            return Input.GetAxis(inputAxis);
         }
 
-        public override int TouchMobileBehaviour()
+        public JoysticController joysticController;
+        public override float TouchMobileBehaviour()
         {
-            // Handle screen touches.
-            if (Input.touchCount > 0)
-            {
-                Touch touch = Input.GetTouch(0);
-                if (touch.phase == TouchPhase.Moved && !EventSystem.current.IsPointerOverGameObject(touch.fingerId))
-                {
-                    gameObject.isMoving = true;
-                    gameObject.rb.velocity = new Vector2(
-                        Math.Clamp((touch.deltaPosition.x / 16) * gameObject.speed, -gameObject.maxVelocity, gameObject.maxVelocity),
-                        gameObject.rb.velocity.y
-                    );
-                    // rb.position=new Vector2(touch.position.x, rb.velocity.y);
-                }
-                else
-                {
-                    gameObject.isMoving = false;
-                    gameObject.rb.velocity = Vector2.zero;
-                }
-            }
-            return 0;
+            return joysticController.movement.x;
         }
-        private Vector2 leftTouchLocStart;
-        private Vector2 rightTouchLocStart;
-        public override int ScreenButtonsBehaviour()
+        public override float ScreenButtonsBehaviour()
         {
-            if (Input.touchCount > 0)
-            {
-                Touch[] myTouches = Input.touches;
-                for (int i = 0; i < Input.touchCount; i++)
-                {
-                    Touch myTouch = Input.GetTouch(i);
-
-                    //Set start postition
-                    if (myTouch.phase == TouchPhase.Began && !EventSystem.current.IsPointerOverGameObject(myTouch.fingerId))
-                    {
-                        //Left Thumb Stick
-                        if (myTouch.position.x < Screen.width / 2)
-                        {
-                            leftTouchLocStart = new Vector2(myTouch.position.x, myTouch.position.y);
-                            // thumbStick_L.transform.position = (leftTouchLocStart);
-                            // thumbStick_L.SetActive(true);
-                        }
-
-                        //Right Thumb Stick
-                        if (myTouch.position.x > Screen.width / 2)
-                        {
-                            rightTouchLocStart = new Vector2(myTouch.position.x, myTouch.position.y);
-                            // thumbStick_R.transform.position = (rightTouchLocStart);
-                            // thumbStick_R.SetActive(true);
-                        }
-                    }
-                }
-            }
-            return 0;
+            Vector2 movement = joysticController.movement;
+            return movement.x;
         }
     }
 
