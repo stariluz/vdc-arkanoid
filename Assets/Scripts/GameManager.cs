@@ -78,14 +78,14 @@ public class GameManager : MonoBehaviour
 
     public void StartGameLevel()
     {
-        InitBoard();
         RestartBoard();
+        InitBoard();
         ball.StartGameLevel(playerInTurn);
     }
     public void NextAttempt()
     {
         RestartBoard();
-        players[playerInTurn].Restart();
+        // players[playerInTurn].Restart();
         ball.Restart(playerInTurn);
     }
     public void InitBoard(){
@@ -97,11 +97,6 @@ public class GameManager : MonoBehaviour
     }
     public void RestartBoard(){
         uIManager.UpdateLives(playerInTurn, players[playerInTurn].lives);
-        // int option = new System.Random().Next(1);
-        // if (option == 1)
-        // {
-        //     playerInTurn = playerInTurn;
-        // }
     }
     public void FirstLaunchBall()
     {

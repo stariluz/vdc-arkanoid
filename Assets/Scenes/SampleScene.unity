@@ -731,8 +731,8 @@ RectTransform:
   - {fileID: 1234341614}
   - {fileID: 2029518967}
   - {fileID: 163980663}
-  - {fileID: 96674732}
   - {fileID: 1559047775}
+  - {fileID: 96674732}
   - {fileID: 125972896}
   - {fileID: 273422117}
   m_Father: {fileID: 0}
@@ -929,6 +929,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &585375497 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7477356868482007112, guid: fe8f26085491fdf46888b3f17c0072e0, type: 3}
+  m_PrefabInstance: {fileID: 4320873437105599401}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &604876183
 GameObject:
   m_ObjectHideFlags: 0
@@ -976,7 +981,7 @@ GameObject:
   - component: {fileID: 623206077}
   - component: {fileID: 623206076}
   m_Layer: 0
-  m_Name: Countdown
+  m_Name: CountdownController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1222,7 +1227,7 @@ GameObject:
   - component: {fileID: 800922480}
   - component: {fileID: 800922479}
   m_Layer: 0
-  m_Name: Square
+  m_Name: Background
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1999,7 +2004,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 7df41e66f18c43e41892a7084182ec21, type: 3}
+  m_Sprite: {fileID: 21300000, guid: ac0502a0182e10443b296451670e7260, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -2137,8 +2142,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   screens:
     _serializedList:
-    - Key: 6
-      Value: {fileID: 270377847}
     - Key: 0
       Value: {fileID: 270377847}
     - Key: 1
@@ -2149,6 +2152,8 @@ MonoBehaviour:
       Value: {fileID: 96674731}
     - Key: 4
       Value: {fileID: 125972895}
+    - Key: 6
+      Value: {fileID: 585375497}
     - Key: 5
       Value: {fileID: 163980662}
   playerUI:
@@ -2221,7 +2226,8 @@ MonoBehaviour:
   selectedControl: 1
   paddleMovement: {fileID: 1873833420}
   ballMovement: {fileID: 1039479557}
-  joysticController: {fileID: 1760362594}
+  uITouch: {fileID: 23589233}
+  keyListener: {fileID: 314856163}
   gameCamera: {fileID: 519420031}
 --- !u!1 &1760362592
 GameObject:
@@ -2274,8 +2280,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   joystick: {fileID: 916512191}
   joystickLimits: {fileID: 286819041}
-  sensibility: 2
-  _movement: {x: 0, y: 0}
+  sensibility: 80
 --- !u!1 &1873833415
 GameObject:
   m_ObjectHideFlags: 0
@@ -2410,9 +2415,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cffb4e33fefc40e4ada82621645a7cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 25
-  unspeedRate: 3
-  maxVelocity: 30
+  speedFactor: 5
+  unspeedRate: 10
+  velocity: 0
+  maxVelocity: 20
   player: 0
   movementInput:
     rid: 5914455789134151680
@@ -3101,6 +3107,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 188433475}
+    - target: {fileID: 5389996408583788126, guid: 0594eaa6781be424e9aef490c64ccf21, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: RestartGame
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3400,6 +3410,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 188433475}
+    - target: {fileID: 2317252401768316335, guid: fe8f26085491fdf46888b3f17c0072e0, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: RestartGame
+      objectReference: {fileID: 0}
     - target: {fileID: 7477356868482007112, guid: fe8f26085491fdf46888b3f17c0072e0, type: 3}
       propertyPath: m_Name
       value: TimeOutScreenUI
@@ -3505,6 +3519,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 188433475}
+    - target: {fileID: 9085150429783325465, guid: 62de250473b31b04193ae4863a4fc11e, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: RestartGame
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3712,20 +3730,20 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 519420032}
-  - {fileID: 1039479556}
-  - {fileID: 1873833417}
-  - {fileID: 188433476}
+  - {fileID: 1729026016}
+  - {fileID: 314856165}
+  - {fileID: 46851610}
   - {fileID: 1650943064}
   - {fileID: 385731294}
   - {fileID: 23589237}
+  - {fileID: 188433476}
+  - {fileID: 519420032}
+  - {fileID: 1039479556}
+  - {fileID: 1873833417}
   - {fileID: 1532605462}
   - {fileID: 604876184}
+  - {fileID: 800922480}
+  - {fileID: 725690174}
   - {fileID: 131509710}
   - {fileID: 337310048}
   - {fileID: 623206077}
-  - {fileID: 800922480}
-  - {fileID: 725690174}
-  - {fileID: 46851610}
-  - {fileID: 1729026016}
-  - {fileID: 314856165}

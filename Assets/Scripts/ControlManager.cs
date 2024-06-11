@@ -9,7 +9,8 @@ public class ControlsManager : MonoBehaviour
     [Header("References")]
     public PaddleMovement paddleMovement;
     public BallMovement ballMovement;
-    public JoysticController joysticController;
+    public GameObject uITouch;
+    public GameObject keyListener;
     public Camera gameCamera;
     // Start is called before the first frame update
     void Start()
@@ -18,7 +19,18 @@ public class ControlsManager : MonoBehaviour
         ballMovement.launchAddListener.SetBehaviourToExecute(selectedControl);
         ballMovement.launchRemoveListener.SetBehaviourToExecute(selectedControl);
         ballMovement.launchStart.SetBehaviourToExecute(selectedControl);
-        joysticController.gameObject.SetActive(false);
+        switch (selectedControl)
+        {
+            case ControlsEnum.PC:
+                Destroy(uITouch);
+                break;
+            case ControlsEnum.Touch:
+                Destroy(keyListener);
+                break;
+            case ControlsEnum.ScreenButtons:
+                Destroy(keyListener);
+                break;
+        }
         AdjustCamera(selectedControl);
     }
     void ChangeControls()

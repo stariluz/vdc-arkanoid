@@ -190,6 +190,7 @@ public class BallMovement : MonoBehaviour
     Button launchButton;
     void HandleUITouch()
     {
+        Debug.Log("CLICKED");
         launchButton.gameObject.SetActive(false);
         Launch();
     }
@@ -202,7 +203,7 @@ public class BallMovement : MonoBehaviour
         }
         public override void PCBehaviour()
         {
-            gameObject.keyListener.OnKeyDown -= gameObject.HandleKeyDown;
+            gameObject.keyListener.OnKeyDown += gameObject.HandleKeyDown;
         }
         public override void TouchMobileBehaviour()
         {
@@ -247,11 +248,12 @@ public class BallMovement : MonoBehaviour
         }
         public override void TouchMobileBehaviour()
         {
-            gameObject.launchButton.gameObject.SetActive(false);
+            Debug.Log("LISTENING BUTTON");
+            gameObject.launchButton.gameObject.SetActive(true);
         }
         public override void ScreenButtonsBehaviour()
         {
-            gameObject.launchButton.gameObject.SetActive(false);
+            gameObject.launchButton.gameObject.SetActive(true);
         }
     }
 }

@@ -11,7 +11,7 @@ namespace Stariluz.GameControl
 
         public delegate void JoysticBehaviour();
         public JoysticBehaviour ExecuteBehaviour;
-        public Vector2 _movement;
+        private Vector2 _movement;
         public Vector2 movement
         {
             get => _movement;
@@ -43,8 +43,12 @@ namespace Stariluz.GameControl
             ExecuteBehaviour = UpdatePlaying;
         }
         private Vector2 originPosition;
+        private Vector2 lastPosition;
+        
+        private float movementLimit;
         public void UpdatePlaying()
         {
+            movementLimit=widthLimit/sensibility;
             if (Input.touchCount > 0)
             {
 
@@ -53,20 +57,28 @@ namespace Stariluz.GameControl
                 {
                     // Debug.Log(touch.position);
                     isMoving = true;
+                    lastPosition = Vector2.zero;
                     originPosition = touch.position;
                     joystickLimits.transform.position = originPosition;
                 }
                 else if (touch.phase == TouchPhase.Moved && isMoving)
                 {
                     joystickLimits.gameObject.SetActive(true);
-                    Vector2 newPosition = Vector2.ClampMagnitude(touch.position - originPosition, widthLimit);
-                    movement = newPosition / widthLimit;
-                    joystick.transform.localPosition = newPosition;
+                    Vector2 newPosition = Vector2.ClampMagnitude(touch.position - originPosition,movementLimit);
+                    // Vector2 offsetPosition = newPosition - lastPosition;
+                    // if ((offsetPosition).magnitude > sensibility)
+                    // {
+                    //     newPosition = lastPosition = Vector2.ClampMagnitude(offsetPosition, sensibility);
+                    // }
+                    movement = newPosition / movementLimit;
+                    joystick.transform.localPosition = newPosition*sensibility;
+                    lastPosition=newPosition;
                 }
                 else if (touch.phase == TouchPhase.Ended)
                 {
                     isMoving = false;
                     joystickLimits.gameObject.SetActive(false);
+                    lastPosition = Vector2.zero;
                     movement = Vector2.zero;
                     joystick.transform.localPosition = Vector2.zero;
                 }

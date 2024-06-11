@@ -4,8 +4,9 @@ using Stariluz.GameControl;
 
 public class PaddleMovement : MonoBehaviour
 {
-    public float speed = 4f;
+    public float speedFactor = 4f;
     public float unspeedRate = 1f;
+    public float velocity = 0f;
     public float maxVelocity = 15f;
 
     private Rigidbody2D rb;
@@ -23,7 +24,7 @@ public class PaddleMovement : MonoBehaviour
 
     // Update is called once per frame
     float lastMovementX = 0;
-    void FixedUpdate()
+    void Update()
     {
         if (!isPaused)
         {
@@ -32,16 +33,22 @@ public class PaddleMovement : MonoBehaviour
             {
                 lastMovementX = movementX;
                 isMoving = true;
+                rb.velocity = new Vector2(
+                    Math.Clamp(lastMovementX * speedFactor + rb.velocity.x, -maxVelocity, maxVelocity),
+                    rb.velocity.y
+                );
             }
             else
             {
                 isMoving = false;
-                lastMovementX = lastMovementX != 0 ? lastMovementX / (1 + unspeedRate / 10) : lastMovementX;
+                rb.velocity = new Vector2(
+                    Math.Clamp(
+                        rb.velocity.x != 0 ? rb.velocity.x / (1 + unspeedRate / 10) : rb.velocity.x,
+                        -maxVelocity, maxVelocity
+                    ),
+                    rb.velocity.y
+                );
             }
-            rb.velocity = new Vector2(
-                Math.Clamp(lastMovementX * speed, -maxVelocity, maxVelocity),
-                rb.velocity.y
-            );
         }
     }
     private bool _isMoving = false;
