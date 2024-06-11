@@ -1635,6 +1635,7 @@ MonoBehaviour:
   velocityMultiplier: 0.1
   ballState: 0
   gameManager: {fileID: 188433475}
+  minAngleFromX: 30
   keyListener: {fileID: 314856164}
   launchButton: {fileID: 1319068938}
 --- !u!114 &1039479558
@@ -2500,8 +2501,8 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 5, y: 1}
-  m_EdgeRadius: 0
+  m_Size: {x: 6, y: 1}
+  m_EdgeRadius: 0.1
 --- !u!82 &1873833423
 AudioSource:
   m_ObjectHideFlags: 0

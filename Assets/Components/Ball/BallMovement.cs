@@ -5,8 +5,6 @@ using System;
 using Unity.Mathematics;
 using Unity.VisualScripting;
 using Stariluz.GameControl;
-using UnityEngine.EventSystems;
-using System.Linq;
 using UnityEngine.UI;
 
 public class BallMovement : MonoBehaviour
@@ -131,26 +129,53 @@ public class BallMovement : MonoBehaviour
         // Debug.Log(("DIRECTION", direction));
         // Debug.Log(("CURRENT SPEED", currentSpeed));
     }
+    public float minAngleFromX = 30;
+    private Vector2 ClampDirection(Vector2 vector)
+    {
+        float magnitude = vector.magnitude;
+        Vector2 normalized = vector.normalized;
+        int yAngle = normalized.y < 1 ? 0 : 1;
+        float angle = Mathf.Atan2(normalized.y, normalized.x) * Mathf.Rad2Deg;
+        float minAngle = -180 * yAngle + minAngleFromX;
+        float maxAngle = -180 * yAngle + 180 - minAngleFromX;
+        Debug.Log((angle, minAngle, maxAngle));
+        float angleClampled = Mathf.Clamp(angle, minAngle, maxAngle);
+        Vector2 result = new Vector2(Mathf.Cos(angleClampled), Mathf.Sin(angleClampled));
+        return result * magnitude;
+
+    }
+    private void RecaulculateTrajectoryFromPaddle()
+    {
+        UpdateVelocity(
+            ClampDirection(new Vector2(
+                ballRigidbody.velocity.x + (float)random.NextDouble() * 10 - 5,
+                ballRigidbody.velocity.y
+            )
+        ).normalized);
+    }
+    private void RecaulculateTrajectoryFromBlock()
+    {
+        Debug.Log("BLOCK COLLISION");
+        UpdateVelocity(
+            ClampDirection(new Vector2(
+                ballRigidbody.velocity.x + (float)random.NextDouble() * 10 - 5,
+                ballRigidbody.velocity.y
+            )
+        ).normalized);
+    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Paddle"))
         {
-            UpdateVelocity(new Vector2(
-                (float)(ballRigidbody.velocity.x + random.NextDouble() * 10 - 5),
-                ballRigidbody.velocity.y
-            ).normalized);
-            gameManager.SetCurrentPlayerInTurn(collision.gameObject.GetComponent<PaddleMovement>().player);
+            RecaulculateTrajectoryFromPaddle();
             ballAudio.OnHitPaddle();
         }
         else if (collision.gameObject.CompareTag("ExploitableBlock"))
         {
-            UpdateVelocity(new Vector2(
-                (float)(ballRigidbody.velocity.x + random.NextDouble() * 10 - 5),
-                ballRigidbody.velocity.y
-            ).normalized);
-            collision.gameObject.GetComponent<ExplotaibleBlock>().OnHit();
+            RecaulculateTrajectoryFromBlock();
             Score(gameManager.playerInTurn);
+            collision.gameObject.GetComponent<ExplotaibleBlock>().OnHit();
             ballAudio.OnHitWall();
         }
         else
@@ -161,10 +186,8 @@ public class BallMovement : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collider)
     {
-        // Debug.Log("TRIGGER");
         if (collider.gameObject.CompareTag("DeadZone"))
         {
-            // Debug.Log("LOSELIVE");
             LoseLive();
         }
     }
