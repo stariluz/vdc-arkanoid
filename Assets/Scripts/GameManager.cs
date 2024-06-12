@@ -41,7 +41,7 @@ public class GameManager : MonoBehaviour
     }
     public void StartGame()
     {
-        levelsManager.StartLevels();
+        levelsManager.StartLevel();
         gameStatus = GameStatus.START_SCREEN;
         uIManager.UpdateScreen(gameStatus);
         players[playerInTurn].StartPlayer();

@@ -7,8 +7,12 @@ public class LevelsManager : MonoBehaviour
 {
     // public Level initialLevel;
     private Level currentLevel;
-    public Level[] levels;
-    private int currentLevelIndex=0;
+    [SerializeField]
+    private Level startLevel;
+
+    [SerializeField]
+    private Level[] levels;
+    private int currentLevelIndex = 0;
 
     public Countdown countdown;
     public delegate void UpdateTimeEvent(int time);
@@ -20,23 +24,23 @@ public class LevelsManager : MonoBehaviour
     }
     void Enable()
     {
-        countdown.OnUpdateTime+=UpdateTime;
+        countdown.OnUpdateTime += UpdateTime;
     }
     void Disable()
     {
-        countdown.OnUpdateTime-=UpdateTime;
+        countdown.OnUpdateTime -= UpdateTime;
     }
     public void UpdateTime(int time)
     {
         OnUpdateTime?.Invoke(time);
     }
 
-    public void StartLevels()
+    public void StartLevel()
     {
-        currentLevelIndex = 0;
-        GameObject firstLevel = Instantiate(levels[0].gameObject, transform.position, Quaternion.identity);
-        currentLevel = firstLevel.GetComponent<Level>();
+        currentLevelIndex = -1;
+        currentLevel = Instantiate(startLevel.gameObject, transform.position, Quaternion.identity).GetComponent<Level>();
     }
+    
     public void RestartGame()
     {
         currentLevel.gameObject.SetActive(false);
@@ -51,17 +55,14 @@ public class LevelsManager : MonoBehaviour
     {
         countdown.Resume();
     }
-    // public void StartMatch(){
-    //     countdown.Run(180);
-    // }
     public Level NextLevel()
     {
         countdown.SetAvailableTime(180);
         currentLevel.gameObject.SetActive(false);
         Destroy(currentLevel.gameObject);
         currentLevelIndex++;
-        GameObject nextLevel=Instantiate(levels[currentLevelIndex].gameObject, transform.position, Quaternion.identity);
-        currentLevel=nextLevel.GetComponent<Level>();
+        GameObject nextLevel = Instantiate(levels[currentLevelIndex].gameObject, transform.position, Quaternion.identity);
+        currentLevel = nextLevel.GetComponent<Level>();
         currentLevel.gameObject.SetActive(true);
 
         return currentLevel;
@@ -72,6 +73,6 @@ public class LevelsManager : MonoBehaviour
     }
     public bool HasNextLevel()
     {
-        return currentLevelIndex < levels.Length-1;
+        return currentLevelIndex < levels.Length - 1;
     }
 }

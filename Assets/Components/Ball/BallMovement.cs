@@ -112,14 +112,14 @@ public class BallMovement : MonoBehaviour
             isFirstLaunch = false;
             gameManager.FirstLaunchBall();
         }
-        float yRandom = 1;
-        float xRandom = (float)(random.NextDouble() * 2) - 1;
 
         ballRigidbody.isKinematic = false;
         gameObject.transform.SetParent(null);
         executeBallUpdate = LaunchedUpdate;
 
-        UpdateVelocity(new Vector2(xRandom, yRandom).normalized);
+        float yRandom = 1;
+        float xRandom = (float)(random.NextDouble() * 2) - 1;
+        UpdateVelocity(RandomizeDirectionOnPaddle(new Vector2(xRandom,yRandom)).normalized);
     }
     void UpdateVelocity(Vector2 direction)
     {
@@ -130,21 +130,30 @@ public class BallMovement : MonoBehaviour
         // Debug.Log(("CURRENT SPEED", currentSpeed));
     }
     public float randomizeTrajectoryRange = 5;
+    private Vector2 RandomizeDirectionOnPaddle(Vector2 vector)
+    {
+        return new Vector2(
+            0.5f * vector.x
+            + 0.1f * gameManager.players[PlayersEnum.PLAYER_1].paddleMovement.rb.velocity.normalized.x
+            + 0.4f * randomizeTrajectoryRange * ((float)random.NextDouble() * 2 - 1),
+            vector.y
+        );
+    }
     private Vector2 RandomizeDirection(Vector2 vector)
     {
         return new Vector2(
-            0.2f * ballRigidbody.velocity.x
-            + 0.4f * gameManager.players[PlayersEnum.PLAYER_1].paddleMovement.rb.velocity.x
-            + 0.4f * randomizeTrajectoryRange * ((float)random.NextDouble() * 2 - 1),
-            ballRigidbody.velocity.y
+            0.5f * vector.x
+            + 0.5f * randomizeTrajectoryRange * ((float)random.NextDouble() * 2 - 1),
+            vector.y
         );
     }
+
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Paddle"))
         {
-            UpdateVelocity(RandomizeDirection(ballRigidbody.velocity).normalized);
+            UpdateVelocity(RandomizeDirectionOnPaddle(ballRigidbody.velocity).normalized);
             ballAudio.OnHitPaddle();
         }
         else if (collision.gameObject.CompareTag("ExploitableBlock"))
