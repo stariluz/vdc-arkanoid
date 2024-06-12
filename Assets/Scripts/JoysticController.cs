@@ -44,11 +44,11 @@ namespace Stariluz.GameControl
         }
         private Vector2 originPosition;
         private Vector2 lastPosition;
-        
+
         private float movementLimit;
         public void UpdatePlaying()
         {
-            movementLimit=widthLimit/sensibility;
+            movementLimit = widthLimit / sensibility;
             if (Input.touchCount > 0)
             {
 
@@ -64,15 +64,15 @@ namespace Stariluz.GameControl
                 else if (touch.phase == TouchPhase.Moved && isMoving)
                 {
                     joystickLimits.gameObject.SetActive(true);
-                    Vector2 newPosition = Vector2.ClampMagnitude(touch.position - originPosition,movementLimit);
+                    Vector2 newPosition = Vector2.ClampMagnitude(touch.position - originPosition, movementLimit);
                     // Vector2 offsetPosition = newPosition - lastPosition;
                     // if ((offsetPosition).magnitude > sensibility)
                     // {
                     //     newPosition = lastPosition = Vector2.ClampMagnitude(offsetPosition, sensibility);
                     // }
                     movement = newPosition / movementLimit;
-                    joystick.transform.localPosition = newPosition*sensibility;
-                    lastPosition=newPosition;
+                    joystick.transform.localPosition = newPosition * sensibility;
+                    lastPosition = newPosition;
                 }
                 else if (touch.phase == TouchPhase.Ended)
                 {
