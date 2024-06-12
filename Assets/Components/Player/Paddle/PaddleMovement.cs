@@ -9,7 +9,7 @@ public class PaddleMovement : MonoBehaviour
     public float velocity = 0f;
     public float maxVelocity = 15f;
 
-    private Rigidbody2D rb;
+    public Rigidbody2D rb;
     public PlayersEnum player;
     private Vector2 initialPosition;
     [SerializeReference]

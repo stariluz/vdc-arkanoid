@@ -129,54 +129,30 @@ public class BallMovement : MonoBehaviour
         // Debug.Log(("DIRECTION", direction));
         // Debug.Log(("CURRENT SPEED", currentSpeed));
     }
-    public float minAngleFromX = 30;
-    private Vector2 ClampDirection(Vector2 vector)
+    public float randomizeTrajectoryRange = 5;
+    private Vector2 RandomizeDirection(Vector2 vector)
     {
-        float magnitude = vector.magnitude;
-        Vector2 normalized = vector.normalized;
-        int yAngle = normalized.y < 1 ? 0 : 1;
-        float angle = Mathf.Atan2(normalized.y, normalized.x) * Mathf.Rad2Deg;
-        float minAngle = -180 * yAngle + minAngleFromX;
-        float maxAngle = -180 * yAngle + 180 - minAngleFromX;
-        Debug.Log((angle, minAngle, maxAngle));
-        float angleClampled = Mathf.Clamp(angle, minAngle, maxAngle);
-        Vector2 result = new Vector2(Mathf.Cos(angleClampled), Mathf.Sin(angleClampled));
-        return result * magnitude;
-
-    }
-    private void RecaulculateTrajectoryFromPaddle()
-    {
-        UpdateVelocity(
-            ClampDirection(new Vector2(
-                ballRigidbody.velocity.x + (float)random.NextDouble() * 10 - 5,
-                ballRigidbody.velocity.y
-            )
-        ).normalized);
-    }
-    private void RecaulculateTrajectoryFromBlock()
-    {
-        Debug.Log("BLOCK COLLISION");
-        UpdateVelocity(
-            ClampDirection(new Vector2(
-                ballRigidbody.velocity.x + (float)random.NextDouble() * 10 - 5,
-                ballRigidbody.velocity.y
-            )
-        ).normalized);
+        return new Vector2(
+            0.2f * ballRigidbody.velocity.x
+            + 0.4f * gameManager.players[PlayersEnum.PLAYER_1].paddleMovement.rb.velocity.x
+            + 0.4f * randomizeTrajectoryRange * ((float)random.NextDouble() * 2 - 1),
+            ballRigidbody.velocity.y
+        );
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Paddle"))
         {
-            RecaulculateTrajectoryFromPaddle();
+            UpdateVelocity(RandomizeDirection(ballRigidbody.velocity).normalized);
             ballAudio.OnHitPaddle();
         }
         else if (collision.gameObject.CompareTag("ExploitableBlock"))
         {
-            RecaulculateTrajectoryFromBlock();
-            Score(gameManager.playerInTurn);
+            UpdateVelocity(RandomizeDirection(ballRigidbody.velocity).normalized);
             collision.gameObject.GetComponent<ExplotaibleBlock>().OnHit();
             ballAudio.OnHitWall();
+            Score(gameManager.playerInTurn);
         }
         else
         {
