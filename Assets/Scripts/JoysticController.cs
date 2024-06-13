@@ -1,13 +1,13 @@
 using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 namespace Stariluz.GameControl
 {
     public class JoysticController : MonoBehaviour
     {
         public RectTransform joystick;
         public RectTransform joystickLimits;
-        public float sensibility;
 
         public delegate void JoysticBehaviour();
         public JoysticBehaviour ExecuteBehaviour;
@@ -18,13 +18,19 @@ namespace Stariluz.GameControl
             set => _movement = value;
         }
         private bool isMoving = false;
-        private float widthLimit = 0;
-        private float heightLimit = 0;
+        private float joyconLimitRadius = 0;
         void Start()
         {
             ExecuteBehaviour = UpdatePlaying;
-            widthLimit = joystickLimits.rect.width / 2;
-            heightLimit = joystickLimits.rect.height / 2;
+            joyconLimitRadius = joystickLimits.rect.width / 2;
+            if (PlayerPrefs.HasKey("Sensibility"))
+            {
+                LoadSensibility();
+            }
+            else
+            {
+                SetSensibilityFromSlider();
+            }
         }
         void Update()
         {
@@ -42,18 +48,31 @@ namespace Stariluz.GameControl
         {
             ExecuteBehaviour = UpdatePlaying;
         }
+
+
+        public float sensibility;
+        public Slider sensibilitySlider;
+        public void SetSensibilityFromSlider()
+        {
+            sensibility =sensibilitySlider.value;
+        }
+        public void LoadSensibility()
+        {
+            sensibilitySlider.value = PlayerPrefs.GetFloat("Sensibility");
+            SetSensibilityFromSlider();
+        }
         private Vector2 originPosition;
         private Vector2 lastPosition;
 
         private float movementLimit;
         public void UpdatePlaying()
         {
-            movementLimit = widthLimit / sensibility;
+            movementLimit = joyconLimitRadius / sensibility;
             if (Input.touchCount > 0)
             {
 
                 Touch touch = Input.GetTouch(0);
-                if (touch.phase == TouchPhase.Began)
+                if (touch.phase == TouchPhase.Began&&!EventSystem.current.IsPointerOverGameObject(touch.fingerId))
                 {
                     // Debug.Log(touch.position);
                     isMoving = true;

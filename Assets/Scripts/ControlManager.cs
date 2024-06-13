@@ -18,7 +18,7 @@ public class ControlsManager : MonoBehaviour
         paddleMovement.movementInput.SetBehaviourToExecute(selectedControl);
         ballMovement.launchAddListener.SetBehaviourToExecute(selectedControl);
         ballMovement.launchRemoveListener.SetBehaviourToExecute(selectedControl);
-        ballMovement.launchStart.SetBehaviourToExecute(selectedControl);
+        ballMovement.ballStartBehaviour.SetBehaviourToExecute(selectedControl);
         switch (selectedControl)
         {
             case ControlsEnum.PC:

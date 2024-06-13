@@ -30,7 +30,7 @@ public class Countdown : MonoBehaviour
     }
     public void Run()
     {
-        Debug.Log("RUN TIME");
+        // Debug.Log("RUN TIME");
         Run(timeAvailable);
     }
     public void Run(int seconds)
@@ -47,7 +47,7 @@ public class Countdown : MonoBehaviour
 
     public void Stop()
     {
-        Debug.Log(("Stop countdown", currentCorroutine));
+        // Debug.Log(("Stop countdown", currentCorroutine));
         if (currentCorroutine != null)
         {
             StopCoroutine(currentCorroutine);

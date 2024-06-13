@@ -20,14 +20,14 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        keyListener.OnKeyDown+=HandleKeyDown;
+        keyListener.OnKeyDown += HandleKeyDown;
         levelsManager.countdown.OnUpdateTime += UpdateTime;
         levelsManager.countdown.OnTimeOut += TimeOut;
         StartGame();
     }
     void Disable()
     {
-        keyListener.OnKeyDown-=HandleKeyDown;
+        keyListener.OnKeyDown -= HandleKeyDown;
         levelsManager.countdown.OnUpdateTime -= UpdateTime;
         levelsManager.countdown.OnTimeOut -= TimeOut;
     }
@@ -50,18 +50,26 @@ public class GameManager : MonoBehaviour
     }
     public void RestartGame()
     {
+        if(isPaused){
+            levelsManager.Resume();
+            players[playerInTurn].Resume();
+            ball.Resume();
+            audioManager.OnResume();
+        }
         // Debug.Log(("GAMEMANAGER RESTART"));
         levelsManager.RestartGame();
         players[playerInTurn].Restart();
         ball.Restart(playerInTurn);
         StartGame();
     }
+    private bool isPaused=false;
     public void Pause()
     {
+        isPaused=true;
         // Debug.Log(("GAMEMANAGER PAUSE"));
-        levelsManager.Pause();
         gameStatus = GameStatus.PAUSE_SCREEN;
         uIManager.UpdateScreen(gameStatus);
+        levelsManager.Pause();
         players[playerInTurn].Pause();
         ball.Pause();
         audioManager.OnPause();
@@ -69,6 +77,7 @@ public class GameManager : MonoBehaviour
 
     public void Resume()
     {
+        isPaused=false;
         // Debug.Log(("GAMEMANAGER RESUME"));
         levelsManager.Resume();
         gameStatus = GameStatus.IN_PLAY;
@@ -104,7 +113,7 @@ public class GameManager : MonoBehaviour
     }
     public void FirstLaunchBall()
     {
-        Debug.Log("First Launch");
+        // Debug.Log("First Launch");
         levelsManager.countdown.Run();
     }
 
@@ -116,7 +125,7 @@ public class GameManager : MonoBehaviour
 
     public Tuple<PlayersEnum, int> Score(PlayersEnum player)
     {
-        Debug.Log((player, audioManager));
+        // Debug.Log((player, audioManager));
         audioManager.OnScore();
         int score = players[playerInTurn].score;
         if (gameStatus == GameStatus.IN_PLAY)
@@ -194,7 +203,7 @@ public class GameManager : MonoBehaviour
         StartGameLevel();
     }
 
-    public Stack<GameStatus> screensStack=new Stack<GameStatus>();
+    public Stack<GameStatus> screensStack = new Stack<GameStatus>();
 
     [SerializeField]
     KeyListener keyListener;
@@ -215,11 +224,22 @@ public class GameManager : MonoBehaviour
     public void ReturnScreen()
     {
         gameStatus = screensStack.Pop();
+        if (Array.IndexOf(InGameUI.playable, gameStatus) != -1)
+        {
+            levelsManager.Resume();
+            players[playerInTurn].Resume();
+            ball.Resume();
+        }
         uIManager.UpdateScreen(gameStatus);
     }
 
     public void OpenSettings()
     {
+        if(!isPaused){
+            levelsManager.Pause();
+            players[playerInTurn].Pause();
+            ball.Pause();
+        }
         screensStack.Push(gameStatus);
         gameStatus = GameStatus.SETTINGS_SCREEN;
         uIManager.UpdateScreen(gameStatus);

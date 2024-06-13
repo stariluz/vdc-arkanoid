@@ -26,4 +26,11 @@ public class InGameUI
         GameStatus.TIME_OUT_SCREEN,
         GameStatus.WIN_SCREEN
     };
+    public static GameStatus[] playable ={
+        GameStatus.START_SCREEN,
+        GameStatus.IN_PLAY,
+        GameStatus.NEXT_LEVEL_SCREEN,
+        GameStatus.TIME_OUT_SCREEN,
+        GameStatus.WIN_SCREEN
+    };
 }

@@ -16,27 +16,25 @@ public class BallMovement : MonoBehaviour
     public float velocityMultiplier;
     public BallStateEnum ballState;
     private Rigidbody2D ballRigidbody;
-    BallAudio ballAudio;
+    public BallAudio ballAudio;
     public GameManager gameManager;
     System.Random random = new();
     public delegate void ExecuteBallUpdate();
     public ExecuteBallUpdate executeBallUpdate;
     public BallLaunchAddListenerBehaviour launchAddListener;
     public BallLaunchRemoveListenerBehaviour launchRemoveListener;
-    public BallStartBehaviour launchStart;
+    public BallStartBehaviour ballStartBehaviour;
 
     BallMovement()
     {
         launchAddListener = new BallLaunchAddListenerBehaviour(this);
         launchRemoveListener = new BallLaunchRemoveListenerBehaviour(this);
-        launchStart = new BallStartBehaviour(this);
+        ballStartBehaviour = new BallStartBehaviour(this);
     }
     // Start is called before the first frame update
     void Start()
     {
-        launchAddListener.ExecuteBehaviour();
         ballRigidbody = GetComponent<Rigidbody2D>();
-        ballAudio = GetComponent<BallAudio>();
         random = new System.Random();
         InitBall();
     }
@@ -77,7 +75,8 @@ public class BallMovement : MonoBehaviour
     }
     public void StartState(PlayersEnum player)
     {
-        launchStart.ExecuteBehaviour();
+        launchAddListener.ExecuteBehaviour();
+        ballStartBehaviour.ExecuteBehaviour();
         currentSpeed = speed;
         ballRigidbody.isKinematic = true;
         gameObject.transform.SetParent(gameManager.players[player].gameObject.transform);
@@ -93,20 +92,24 @@ public class BallMovement : MonoBehaviour
 
     private Vector2 savedVelocity;
     private ExecuteBallUpdate savedUpdate;
+    private bool isPaused = false;
     public void Pause()
     {
         savedVelocity = ballRigidbody.velocity;
         ballRigidbody.velocity = Vector2.zero;
         savedUpdate = executeBallUpdate;
         executeBallUpdate = PauseUpdate;
+        isPaused = true;
     }
     public void Resume()
     {
         ballRigidbody.velocity = savedVelocity;
         executeBallUpdate = savedUpdate;
+        isPaused = false;
     }
     public void Launch()
     {
+        launchRemoveListener.ExecuteBehaviour();
         if (isFirstLaunch)
         {
             isFirstLaunch = false;
@@ -119,7 +122,7 @@ public class BallMovement : MonoBehaviour
 
         float yRandom = 1;
         float xRandom = (float)(random.NextDouble() * 2) - 1;
-        UpdateVelocity(RandomizeDirectionOnPaddle(new Vector2(xRandom,yRandom)).normalized);
+        UpdateVelocity(RandomizeDirectionOnLaunch(new Vector2(xRandom, yRandom)).normalized);
     }
     void UpdateVelocity(Vector2 direction)
     {
@@ -130,20 +133,41 @@ public class BallMovement : MonoBehaviour
         // Debug.Log(("CURRENT SPEED", currentSpeed));
     }
     public float randomizeTrajectoryRange = 5;
-    private Vector2 RandomizeDirectionOnPaddle(Vector2 vector)
+    private Vector2 RandomizeDirectionOnLaunch(Vector2 vector)
     {
         return new Vector2(
-            0.5f * vector.x
-            + 0.1f * gameManager.players[PlayersEnum.PLAYER_1].paddleMovement.rb.velocity.normalized.x
-            + 0.4f * randomizeTrajectoryRange * ((float)random.NextDouble() * 2 - 1),
+            0.3f * vector.x
+            + 0.4f * gameManager.players[PlayersEnum.PLAYER_1].paddleMovement.rb.velocity.normalized.x
+            + 0.3f * randomizeTrajectoryRange * ((float)random.NextDouble() * 2 - 1),
             vector.y
+        );
+    }
+    private Vector2 RandomizeDirectionOnPaddle(Vector2 vector)
+    {
+        Vector2 normalized = vector.normalized;
+        Debug.Log(normalized.x);
+        if (normalized.x > -0.3 && normalized.x < 0.3)
+        {
+            normalized.x = Math.Sign(normalized.x) * (1 + (float)random.NextDouble() * 2);
+            Debug.Log(("CORRECTED X", normalized.x));
+        }
+        if (normalized.y > -0.3 && normalized.y < 0.3)
+        {
+            normalized.y = Math.Sign(normalized.y) * (1 + (float)random.NextDouble() * 2);
+            Debug.Log(("CORRECTED Y", normalized.x));
+        }
+        return new Vector2(
+            0.6f * normalized.x
+            + 0.2f * gameManager.players[PlayersEnum.PLAYER_1].paddleMovement.rb.velocity.normalized.x
+            + 0.2f * randomizeTrajectoryRange * ((float)random.NextDouble() * 2 - 1),
+            normalized.y
         );
     }
     private Vector2 RandomizeDirection(Vector2 vector)
     {
         return new Vector2(
-            0.5f * vector.x
-            + 0.5f * randomizeTrajectoryRange * ((float)random.NextDouble() * 2 - 1),
+            0.6f * vector.x
+            + 0.4f * randomizeTrajectoryRange * ((float)random.NextDouble() * 2 - 1),
             vector.y
         );
     }
@@ -192,15 +216,18 @@ public class BallMovement : MonoBehaviour
     KeyListener keyListener;
     void HandleKeyDown(KeyCode keyCode)
     {
-        if (keyCode == KeyCode.Space) Launch();
+        if (keyCode == KeyCode.Space && !isPaused) Launch();
     }
     [SerializeField]
     Button launchButton;
     void HandleUITouch()
     {
-        Debug.Log("CLICKED");
-        launchButton.gameObject.SetActive(false);
-        Launch();
+        // Debug.Log("CLICKED");
+        if (!isPaused)
+        {
+            launchButton.gameObject.SetActive(false);
+            Launch();
+        }
     }
     public class BallLaunchAddListenerBehaviour : MultiplatformBehaviour
     {
@@ -256,7 +283,6 @@ public class BallMovement : MonoBehaviour
         }
         public override void TouchMobileBehaviour()
         {
-            Debug.Log("LISTENING BUTTON");
             gameObject.launchButton.gameObject.SetActive(true);
         }
         public override void ScreenButtonsBehaviour()
