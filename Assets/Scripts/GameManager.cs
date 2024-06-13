@@ -20,12 +20,14 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        keyListener.OnKeyDown+=HandleKeyDown;
         levelsManager.countdown.OnUpdateTime += UpdateTime;
         levelsManager.countdown.OnTimeOut += TimeOut;
         StartGame();
     }
     void Disable()
     {
+        keyListener.OnKeyDown-=HandleKeyDown;
         levelsManager.countdown.OnUpdateTime -= UpdateTime;
         levelsManager.countdown.OnTimeOut -= TimeOut;
     }
@@ -88,14 +90,16 @@ public class GameManager : MonoBehaviour
         // players[playerInTurn].Restart();
         ball.Restart(playerInTurn);
     }
-    public void InitBoard(){
+    public void InitBoard()
+    {
         players[playerInTurn].score = 0;
         uIManager.UpdateScore(playerInTurn, 0);
         gameStatus = GameStatus.IN_PLAY;
         uIManager.UpdateScreen(gameStatus);
         levelsManager.countdown.SetAvailableTime();
     }
-    public void RestartBoard(){
+    public void RestartBoard()
+    {
         uIManager.UpdateLives(playerInTurn, players[playerInTurn].lives);
     }
     public void FirstLaunchBall()
@@ -188,5 +192,50 @@ public class GameManager : MonoBehaviour
     {
         levelsManager.NextLevel();
         StartGameLevel();
+    }
+
+    public Stack<GameStatus> screensStack=new Stack<GameStatus>();
+
+    [SerializeField]
+    KeyListener keyListener;
+    void HandleKeyDown(KeyCode keyCode)
+    {
+        if (keyCode == KeyCode.Escape)
+        {
+            if (screensStack.Count > 0)
+            {
+                ReturnScreen();
+            }
+            else
+            {
+                OpenSettings();
+            }
+        }
+    }
+    public void ReturnScreen()
+    {
+        gameStatus = screensStack.Pop();
+        uIManager.UpdateScreen(gameStatus);
+    }
+
+    public void OpenSettings()
+    {
+        screensStack.Push(gameStatus);
+        gameStatus = GameStatus.SETTINGS_SCREEN;
+        uIManager.UpdateScreen(gameStatus);
+    }
+
+    public void OpenControlSettings()
+    {
+        screensStack.Push(gameStatus);
+        gameStatus = GameStatus.CONTROLS_SETTINGS_SCREEN;
+        uIManager.UpdateScreen(gameStatus);
+    }
+
+    public void OpenSoundSettings()
+    {
+        screensStack.Push(gameStatus);
+        gameStatus = GameStatus.SOUNDS_SETTINGS_SCREEN;
+        uIManager.UpdateScreen(gameStatus);
     }
 }

@@ -50,9 +50,12 @@ public class UIManager : MonoBehaviour
         DeactivateOtherScreens(gameStatus);
         screens[gameStatus].SetActive(true);
 
-        if (Array.IndexOf(InGameUI.statusArray, gameStatus)!=-1){
+        if (Array.IndexOf(InGameUI.statusArray, gameStatus) != -1)
+        {
             gameDataUI.SetActive(true);
-        }else{
+        }
+        else
+        {
             gameDataUI.SetActive(false);
         }
     }
@@ -71,5 +74,6 @@ public class UIManager : MonoBehaviour
 
     void Restart()
     {
+        throw new NotImplementedException();
     }
 }
