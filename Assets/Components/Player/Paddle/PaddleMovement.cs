@@ -6,7 +6,6 @@ public class PaddleMovement : MonoBehaviour
 {
     public float speedFactor = 4f;
     public float unspeedRate = 1f;
-    public float velocity = 0f;
     public float maxVelocity = 15f;
 
     public Rigidbody2D rb;
@@ -23,7 +22,7 @@ public class PaddleMovement : MonoBehaviour
     }
 
     // Update is called once per frame
-    float lastMovementX = 0;
+    // float lastMovementX = 0;
     void Update()
     {
         if (!isPaused)
@@ -31,10 +30,10 @@ public class PaddleMovement : MonoBehaviour
             float movementX = movementInput.ExecuteBehaviour();
             if (movementX != 0)
             {
-                lastMovementX = movementX;
+                // lastMovementX = movementX;
                 isMoving = true;
                 rb.velocity = new Vector2(
-                    Math.Clamp(lastMovementX * speedFactor + rb.velocity.x, -maxVelocity, maxVelocity),
+                    Math.Clamp(movementX * speedFactor + rb.velocity.x, -maxVelocity, maxVelocity),
                     rb.velocity.y
                 );
             }

@@ -258,4 +258,8 @@ public class GameManager : MonoBehaviour
         gameStatus = GameStatus.SOUNDS_SETTINGS_SCREEN;
         uIManager.UpdateScreen(gameStatus);
     }
+
+    public void CloseGame(){
+        Application.Quit();
+    }
 }
