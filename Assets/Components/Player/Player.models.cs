@@ -20,6 +20,7 @@ public class InGameUI
 {
     public static GameStatus[] statusArray ={
         GameStatus.GAME_OVER_SCREEN,
+        GameStatus.LEVELS_SCREEN,
         GameStatus.IN_PLAY,
         GameStatus.NEXT_LEVEL_SCREEN,
         GameStatus.PAUSE_SCREEN,

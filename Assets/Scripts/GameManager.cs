@@ -41,6 +41,15 @@ public class GameManager : MonoBehaviour
     {
         return players[playerInTurn];
     }
+
+    public void LevelsMenu()
+    {
+        levelsManager.LoadCompletedLevels();
+        screensStack.Push(gameStatus);
+        gameStatus = GameStatus.LEVELS_SCREEN;
+        uIManager.UpdateScreen(gameStatus);
+    }
+
     public void StartGame()
     {
         levelsManager.StartLevel();
@@ -48,9 +57,11 @@ public class GameManager : MonoBehaviour
         uIManager.UpdateScreen(gameStatus);
         players[playerInTurn].StartPlayer();
     }
+
     public void RestartGame()
     {
-        if(isPaused){
+        if (isPaused)
+        {
             levelsManager.Resume();
             players[playerInTurn].Resume();
             ball.Resume();
@@ -62,10 +73,10 @@ public class GameManager : MonoBehaviour
         ball.Restart(playerInTurn);
         StartGame();
     }
-    private bool isPaused=false;
+    private bool isPaused = false;
     public void Pause()
     {
-        isPaused=true;
+        isPaused = true;
         // Debug.Log(("GAMEMANAGER PAUSE"));
         gameStatus = GameStatus.PAUSE_SCREEN;
         uIManager.UpdateScreen(gameStatus);
@@ -77,7 +88,7 @@ public class GameManager : MonoBehaviour
 
     public void Resume()
     {
-        isPaused=false;
+        isPaused = false;
         // Debug.Log(("GAMEMANAGER RESUME"));
         levelsManager.Resume();
         gameStatus = GameStatus.IN_PLAY;
@@ -182,6 +193,7 @@ public class GameManager : MonoBehaviour
     public void Win(PlayersEnum player)
     {
         audioManager.OnGameWin();
+        levelsManager.UpdateHighestCompletedLevel();
         levelsManager.countdown.Stop();
         if (levelsManager.HasNextLevel())
         {
@@ -235,7 +247,8 @@ public class GameManager : MonoBehaviour
 
     public void OpenSettings()
     {
-        if(!isPaused){
+        if (!isPaused)
+        {
             levelsManager.Pause();
             players[playerInTurn].Pause();
             ball.Pause();
@@ -259,7 +272,8 @@ public class GameManager : MonoBehaviour
         uIManager.UpdateScreen(gameStatus);
     }
 
-    public void CloseGame(){
+    public void CloseGame()
+    {
         Application.Quit();
     }
 }
