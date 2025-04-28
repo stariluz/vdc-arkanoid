@@ -32,24 +32,22 @@ public class ControlsManager : MonoBehaviour
 
     private void ApplyControlSettings()
     {
-        // Schedule the method to be called in the next frame if we're in Editor Mode
-        if (Application.isEditor && !EditorApplication.isPlaying)
+        paddleMovement.movementInput.SetBehaviourToExecute(selectedControl);
+        ballMovement.launchAddListener.SetBehaviourToExecute(selectedControl);
+        ballMovement.launchRemoveListener.SetBehaviourToExecute(selectedControl);
+        ballMovement.ballStartBehaviour.SetBehaviourToExecute(selectedControl);
+
+#if UNITY_EDITOR
+        EditorApplication.delayCall += () =>
         {
-            EditorApplication.delayCall += () =>
-            {
-                paddleMovement.movementInput.SetBehaviourToExecute(selectedControl);
-                ballMovement.launchAddListener.SetBehaviourToExecute(selectedControl);
-                ballMovement.launchRemoveListener.SetBehaviourToExecute(selectedControl);
-                ballMovement.ballStartBehaviour.SetBehaviourToExecute(selectedControl);
+            // Important: don't destroy objects in editor mode! (it would break the scene)
+            // Instead, enable/disable them.
+            if (uITouch != null) uITouch.SetActive(selectedControl == ControlsEnum.Touch || selectedControl == ControlsEnum.ScreenButtons);
+            if (keyListener != null) keyListener.SetActive(selectedControl == ControlsEnum.PC);
 
-                // Important: don't destroy objects in editor mode! (it would break the scene)
-                // Instead, enable/disable them.
-                if (uITouch != null) uITouch.SetActive(selectedControl == ControlsEnum.Touch || selectedControl == ControlsEnum.ScreenButtons);
-                if (keyListener != null) keyListener.SetActive(selectedControl == ControlsEnum.PC);
-
-                AdjustCamera(selectedControl);
-            };
-        }
+            AdjustCamera(selectedControl);
+        };
+#endif
     }
     private void AdjustCamera(ControlsEnum control)
     {
