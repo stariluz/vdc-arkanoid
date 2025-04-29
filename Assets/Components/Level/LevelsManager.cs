@@ -12,27 +12,18 @@ public class LevelsManager : MonoBehaviour
     private Level startLevel;
 
     [SerializeField]
-    private Level[] levels;
+    private Level[] _levels;
+    public Level[] Levels => _levels;
     private int currentLevelIndex = 0;
-    private int highestCompletedLevel = 0; // Para guardar el mayor nivel completado
-
-    [SerializeField]
-    private Transform buttonsParent; // Contenedor de los botones en la UI
-    [SerializeField]
-    private GameObject levelButtonPrefab; // Prefab del botón interactuable
-    [SerializeField]
-    private GameObject lockedButtonPrefab; // Prefab del botón bloqueado
-
-    private List<Button> levelButtons = new List<Button>(); // Lista de botones para los niveles
-
+    private int _highestCompletedLevel = 0; // Para guardar el mayor nivel completado
+    public int HighestCompletedLevel => _highestCompletedLevel;
     public Countdown countdown;
     public delegate void UpdateTimeEvent(int time);
     public UpdateTimeEvent OnUpdateTime;
     // Start is called before the first frame update
     void Start()
     {
-        // LoadCompletedLevels();   
-        // DisplayLevelButtons();
+        LoadCompletedLevels();
     }
     void Enable()
     {
@@ -71,44 +62,47 @@ public class LevelsManager : MonoBehaviour
     public void LoadCompletedLevels()
     {
         // Cargar el índice del nivel completado más alto desde PlayerPrefs
-        highestCompletedLevel = PlayerPrefs.GetInt("HighestCompletedLevel", 0);
-        currentLevelIndex = highestCompletedLevel;
-        if (currentLevelIndex >= levels.Length)
+        _highestCompletedLevel = PlayerPrefs.GetInt("HighestCompletedLevel", 0);
+        currentLevelIndex = HighestCompletedLevel;
+        if (currentLevelIndex >= Levels.Length)
         {
-            currentLevelIndex = levels.Length - 1; // Asegura que no exceda el índice de los niveles disponibles
+            currentLevelIndex = Levels.Length - 1; // Asegura que no exceda el índice de los niveles disponibles
         }
     }
 
     public void SaveCompletedLevels()
     {
         // Guardar el mayor nivel completado en PlayerPrefs
-        PlayerPrefs.SetInt("HighestCompletedLevel", highestCompletedLevel);
+        PlayerPrefs.SetInt("HighestCompletedLevel", HighestCompletedLevel);
         PlayerPrefs.Save();  // Asegura que los cambios se guardan inmediatamente
     }
 
     public Level LoadLevel(int levelIndex)
     {
         // Verificar que el índice de nivel es válido
-        if (levelIndex < 0 || levelIndex >= levels.Length)
+        if (levelIndex < 0 || levelIndex >= Levels.Length)
         {
             Debug.LogError("Nivel inválido.");
             return null;
         }
+
+        currentLevelIndex = levelIndex;
+        countdown.SetAvailableTime(180);
 
         if (currentLevel != null)
         {
             Destroy(currentLevel.gameObject); // Destruir el nivel anterior
         }
 
-        GameObject levelToLoad = Instantiate(levels[levelIndex].gameObject, transform.position, Quaternion.identity);
+        GameObject levelToLoad = Instantiate(Levels[levelIndex].gameObject, transform.position, Quaternion.identity);
         currentLevel = levelToLoad.GetComponent<Level>();
         currentLevel.gameObject.SetActive(true);
-
+        
         return currentLevel;
     }
     public void UpdateHighestCompletedLevel()
     {
-        highestCompletedLevel = currentLevelIndex;
+        _highestCompletedLevel = currentLevelIndex;
         SaveCompletedLevels();
     }
     public Level NextLevel()
@@ -118,7 +112,7 @@ public class LevelsManager : MonoBehaviour
         Destroy(currentLevel.gameObject);
         currentLevelIndex++;
 
-        GameObject levelToLoad = Instantiate(levels[currentLevelIndex].gameObject, transform.position, Quaternion.identity);
+        GameObject levelToLoad = Instantiate(Levels[currentLevelIndex].gameObject, transform.position, Quaternion.identity);
         currentLevel = levelToLoad.GetComponent<Level>();
         currentLevel.gameObject.SetActive(true);
 
@@ -130,42 +124,6 @@ public class LevelsManager : MonoBehaviour
     }
     public bool HasNextLevel()
     {
-        return currentLevelIndex < levels.Length - 1;
-    }
-    
-    private void DisplayLevelButtons()
-    {
-        // Limpiar cualquier botón anterior
-        foreach (var button in levelButtons)
-        {
-            Destroy(button.gameObject);
-        }
-
-        levelButtons.Clear();
-
-        // Crear botones para cada nivel
-        for (int i = 0; i < levels.Length; i++)
-        {
-            GameObject buttonObj;
-            Button button;
-
-            if (i <= highestCompletedLevel)
-            {
-                // Crear un botón interactuable para los niveles completados o alcanzados
-                buttonObj = Instantiate(levelButtonPrefab, buttonsParent);
-                button = buttonObj.GetComponent<Button>();
-                int levelIndex = i; // Capturar el índice para el delegado
-                button.onClick.AddListener(() => LoadLevel(levelIndex)); // Añadir acción al clic
-            }
-            else
-            {
-                // Crear un botón bloqueado para los niveles no alcanzados
-                buttonObj = Instantiate(lockedButtonPrefab, buttonsParent);
-                button = buttonObj.GetComponent<Button>();
-                button.interactable = false; // Deshabilitar interacción
-            }
-
-            levelButtons.Add(button);
-        }
+        return currentLevelIndex < Levels.Length - 1;
     }
 }

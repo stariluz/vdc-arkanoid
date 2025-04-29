@@ -5,6 +5,7 @@ using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 using AYellowpaper.SerializedCollections;
+using System.ComponentModel;
 
 public class GameManager : MonoBehaviour
 {
@@ -15,21 +16,23 @@ public class GameManager : MonoBehaviour
     public BallMovement ball;
     public GameStatus gameStatus = GameStatus.START_SCREEN;
     public AudioManager audioManager;
-    public LevelsManager levelsManager;
+    [SerializeField]
+    private LevelsManager _levelsManager;
+    public LevelsManager LevelsManager => _levelsManager;
 
     // Start is called before the first frame update
     void Start()
     {
         keyListener.OnKeyDown += HandleKeyDown;
-        levelsManager.countdown.OnUpdateTime += UpdateTime;
-        levelsManager.countdown.OnTimeOut += TimeOut;
+        LevelsManager.countdown.OnUpdateTime += UpdateTime;
+        LevelsManager.countdown.OnTimeOut += TimeOut;
         StartGame();
     }
     void Disable()
     {
         keyListener.OnKeyDown -= HandleKeyDown;
-        levelsManager.countdown.OnUpdateTime -= UpdateTime;
-        levelsManager.countdown.OnTimeOut -= TimeOut;
+        LevelsManager.countdown.OnUpdateTime -= UpdateTime;
+        LevelsManager.countdown.OnTimeOut -= TimeOut;
     }
 
     // Update is called once per frame
@@ -42,17 +45,10 @@ public class GameManager : MonoBehaviour
         return players[playerInTurn];
     }
 
-    public void LevelsMenu()
-    {
-        levelsManager.LoadCompletedLevels();
-        screensStack.Push(gameStatus);
-        gameStatus = GameStatus.LEVELS_SCREEN;
-        uIManager.UpdateScreen(gameStatus);
-    }
 
     public void StartGame()
     {
-        levelsManager.StartLevel();
+        LevelsManager.StartLevel();
         gameStatus = GameStatus.START_SCREEN;
         uIManager.UpdateScreen(gameStatus);
         players[playerInTurn].StartPlayer();
@@ -62,13 +58,10 @@ public class GameManager : MonoBehaviour
     {
         if (isPaused)
         {
-            levelsManager.Resume();
-            players[playerInTurn].Resume();
-            ball.Resume();
-            audioManager.OnResume();
+            Resume();
         }
         // Debug.Log(("GAMEMANAGER RESTART"));
-        levelsManager.RestartGame();
+        LevelsManager.RestartGame();
         players[playerInTurn].Restart();
         ball.Restart(playerInTurn);
         StartGame();
@@ -80,7 +73,7 @@ public class GameManager : MonoBehaviour
         // Debug.Log(("GAMEMANAGER PAUSE"));
         gameStatus = GameStatus.PAUSE_SCREEN;
         uIManager.UpdateScreen(gameStatus);
-        levelsManager.Pause();
+        LevelsManager.Pause();
         players[playerInTurn].Pause();
         ball.Pause();
         audioManager.OnPause();
@@ -90,7 +83,7 @@ public class GameManager : MonoBehaviour
     {
         isPaused = false;
         // Debug.Log(("GAMEMANAGER RESUME"));
-        levelsManager.Resume();
+        LevelsManager.Resume();
         gameStatus = GameStatus.IN_PLAY;
         uIManager.UpdateScreen(gameStatus);
         players[playerInTurn].Resume();
@@ -116,7 +109,7 @@ public class GameManager : MonoBehaviour
         uIManager.UpdateScore(playerInTurn, 0);
         gameStatus = GameStatus.IN_PLAY;
         uIManager.UpdateScreen(gameStatus);
-        levelsManager.countdown.SetAvailableTime();
+        LevelsManager.countdown.SetAvailableTime();
     }
     public void RestartBoard()
     {
@@ -125,7 +118,7 @@ public class GameManager : MonoBehaviour
     public void FirstLaunchBall()
     {
         // Debug.Log("First Launch");
-        levelsManager.countdown.Run();
+        LevelsManager.countdown.Run();
     }
 
     public void SetCurrentPlayerInTurn(PlayersEnum player)
@@ -144,7 +137,7 @@ public class GameManager : MonoBehaviour
             score++;
             players[playerInTurn].score = score;
             uIManager.UpdateScore(playerInTurn, score);
-            if (levelsManager.IsLevelCompleted())
+            if (LevelsManager.IsLevelCompleted())
             {
                 Win(player);
             }
@@ -185,7 +178,7 @@ public class GameManager : MonoBehaviour
     {
         // Debug.Log(("DEV - GAME OVER"));
         audioManager.OnGameOver();
-        levelsManager.countdown.Stop();
+        LevelsManager.countdown.Stop();
         gameStatus = GameStatus.GAME_OVER_SCREEN;
         uIManager.UpdateScreen(gameStatus);
     }
@@ -193,9 +186,9 @@ public class GameManager : MonoBehaviour
     public void Win(PlayersEnum player)
     {
         audioManager.OnGameWin();
-        levelsManager.UpdateHighestCompletedLevel();
-        levelsManager.countdown.Stop();
-        if (levelsManager.HasNextLevel())
+        LevelsManager.UpdateHighestCompletedLevel();
+        LevelsManager.countdown.Stop();
+        if (LevelsManager.HasNextLevel())
         {
             // Debug.Log("DEV - GameManager - Win() - There's next level");
             gameStatus = GameStatus.NEXT_LEVEL_SCREEN;
@@ -211,7 +204,21 @@ public class GameManager : MonoBehaviour
 
     public void NextLevel()
     {
-        levelsManager.NextLevel();
+        LevelsManager.NextLevel();
+        StartGameLevel();
+    }
+
+    public void OpenLevelsMenu()
+    {
+        LevelsManager.LoadCompletedLevels();
+        screensStack.Push(gameStatus);
+        gameStatus = GameStatus.LEVELS_SCREEN;
+        uIManager.UpdateScreen(gameStatus);
+    }
+    public void LoadLevel(int levelIndex)
+    {
+        LevelsManager.LoadLevel(levelIndex);
+        screensStack.Pop();
         StartGameLevel();
     }
 
@@ -238,18 +245,18 @@ public class GameManager : MonoBehaviour
         gameStatus = screensStack.Pop();
         if (Array.IndexOf(InGameUI.playable, gameStatus) != -1)
         {
-            levelsManager.Resume();
+            LevelsManager.Resume();
             players[playerInTurn].Resume();
             ball.Resume();
         }
         uIManager.UpdateScreen(gameStatus);
     }
-
+    
     public void OpenSettings()
     {
         if (!isPaused)
         {
-            levelsManager.Pause();
+            LevelsManager.Pause();
             players[playerInTurn].Pause();
             ball.Pause();
         }

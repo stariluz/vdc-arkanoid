@@ -55,7 +55,7 @@ public class Countdown : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("You countdown is already null.");
+            Debug.LogWarning("You countdown is already stopped.");
         }
     }
     private bool isPaused = false;
@@ -67,7 +67,7 @@ public class Countdown : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("You countdown is already null.");
+            Debug.LogWarning("You countdown is already paused.");
         }
     }
     public void Resume()
@@ -78,7 +78,7 @@ public class Countdown : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("You countdown is already null.");
+            Debug.LogWarning("You countdown is already running.");
         }
     }
 
