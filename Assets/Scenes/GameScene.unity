@@ -141,7 +141,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &23589234
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -601,7 +601,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &314856164
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1039,7 +1039,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 15
+  orthographic size: 19
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -2255,7 +2255,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 970442b44f4354c48a73c9c05dec5f79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectedControl: 1
+  selectedControl: 0
   paddleMovement: {fileID: 1873833420}
   ballMovement: {fileID: 1039479557}
   uITouch: {fileID: 23589233}
@@ -4866,6 +4866,16 @@ PrefabInstance:
     - target: {fileID: 4634668442649847984, guid: 672f60b3c7b2e7f4392a21f6d3e451b5, type: 3}
       propertyPath: m_Name
       value: SkipScreenUI
+      objectReference: {fileID: 0}
+    - target: {fileID: 4634668442649847984, guid: 672f60b3c7b2e7f4392a21f6d3e451b5, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5206841070572126354, guid: 672f60b3c7b2e7f4392a21f6d3e451b5, type: 3}
+      propertyPath: m_text
+      value: "Este anuncio est\xE1 aqu\xED para fines de un trabajo escolar sobre
+        patrones oscuros, el anuncio es falso y no generamos ninguna ganancia con
+        \xE9l."
       objectReference: {fileID: 0}
     - target: {fileID: 6847559449323220538, guid: 672f60b3c7b2e7f4392a21f6d3e451b5, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target

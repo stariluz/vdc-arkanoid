@@ -34,8 +34,9 @@ public class LevelsUIManager : MonoBehaviour
 
         levelButtons.Clear();
 
+        int upperBound=Math.Min(gameManager.LevelsManager.HighestCompletedLevel+1,gameManager.LevelsManager.Levels.Length-1);
         // Crear un botón interactuable para los niveles completados o alcanzados
-        for (int i = 0; i <= gameManager.LevelsManager.HighestCompletedLevel; i++)
+        for (int i = 0; i <= upperBound; i++)
         {
             GameObject buttonObj;
             Button button;
@@ -53,7 +54,7 @@ public class LevelsUIManager : MonoBehaviour
         }
 
         // Crear un botón interactuable para los niveles completados o alcanzados
-        for (int i = gameManager.LevelsManager.HighestCompletedLevel + 1; i < gameManager.LevelsManager.Levels.Length; i++)
+        for (int i = gameManager.LevelsManager.HighestCompletedLevel + 2; i < gameManager.LevelsManager.Levels.Length; i++)
         {
             GameObject buttonObj;
             Button button;

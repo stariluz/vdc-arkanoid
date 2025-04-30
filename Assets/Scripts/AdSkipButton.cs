@@ -38,9 +38,8 @@ public class AdSkipButton : MonoBehaviour
     {
         if (canSkip)
         {
-            Debug.Log("Anuncio skipeado");
             gameManager.ReturnScreen();
-            gameManager.NextLevel();
+            gameManager.Win(gameManager.playerInTurn);
         }
     }
 }
