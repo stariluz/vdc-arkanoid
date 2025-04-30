@@ -18,25 +18,7 @@ public class LevelsManager : MonoBehaviour
     private int _highestCompletedLevel = 0; // Para guardar el mayor nivel completado
     public int HighestCompletedLevel => _highestCompletedLevel;
     public Countdown countdown;
-    public delegate void UpdateTimeEvent(int time);
-    public UpdateTimeEvent OnUpdateTime;
     // Start is called before the first frame update
-    void Start()
-    {
-        LoadCompletedLevels();
-    }
-    void Enable()
-    {
-        countdown.OnUpdateTime += UpdateTime;
-    }
-    void Disable()
-    {
-        countdown.OnUpdateTime -= UpdateTime;
-    }
-    public void UpdateTime(int time)
-    {
-        OnUpdateTime?.Invoke(time);
-    }
 
     public void StartLevel()
     {
@@ -82,7 +64,7 @@ public class LevelsManager : MonoBehaviour
         // Verificar que el índice de nivel es válido
         if (levelIndex < 0 || levelIndex >= Levels.Length)
         {
-            Debug.LogError("Nivel inválido.");
+            Debug.LogError(("Invalid level.", levelIndex));
             return null;
         }
 

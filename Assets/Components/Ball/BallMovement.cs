@@ -25,6 +25,11 @@ public class BallMovement : MonoBehaviour
     public BallLaunchRemoveListenerBehaviour launchRemoveListener;
     public BallStartBehaviour ballStartBehaviour;
 
+    bool isFirstLaunch = false;
+    private Vector2 savedVelocity;
+    private ExecuteBallUpdate savedUpdate;
+    private bool isPaused = false;
+    
     BallMovement()
     {
         launchAddListener = new BallLaunchAddListenerBehaviour(this);
@@ -67,7 +72,6 @@ public class BallMovement : MonoBehaviour
     void PauseUpdate()
     {
     }
-    bool isFirstLaunch = false;
     public void StartGameLevel(PlayersEnum player)
     {
         isFirstLaunch = true;
@@ -82,6 +86,7 @@ public class BallMovement : MonoBehaviour
         gameObject.transform.SetParent(gameManager.players[player].gameObject.transform);
         gameObject.transform.position = gameManager.players[player].ballTransform.position;
         executeBallUpdate = FollowingPlayerUpdate;
+        savedUpdate=FollowingPlayerUpdate;
     }
 
     public void Restart(PlayersEnum player)
@@ -90,9 +95,6 @@ public class BallMovement : MonoBehaviour
         StartState(player);
     }
 
-    private Vector2 savedVelocity;
-    private ExecuteBallUpdate savedUpdate;
-    private bool isPaused = false;
     public void Pause()
     {
         savedVelocity = ballRigidbody.velocity;

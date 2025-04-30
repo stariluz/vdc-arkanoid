@@ -52,6 +52,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1777288993332542956, guid: e3c762f96d9704c9793ec8057ff55dde, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3886464803032688601, guid: e3c762f96d9704c9793ec8057ff55dde, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4576775083312085126, guid: e3c762f96d9704c9793ec8057ff55dde, type: 3}
       propertyPath: m_Name
       value: LevelTest 3
@@ -174,6 +182,8 @@ PrefabInstance:
     - {fileID: 9185831354129681618, guid: e3c762f96d9704c9793ec8057ff55dde, type: 3}
     - {fileID: 1952390332269409264, guid: e3c762f96d9704c9793ec8057ff55dde, type: 3}
     - {fileID: 6093242165485911851, guid: e3c762f96d9704c9793ec8057ff55dde, type: 3}
+    - {fileID: 3886464803032688601, guid: e3c762f96d9704c9793ec8057ff55dde, type: 3}
+    - {fileID: 1777288993332542956, guid: e3c762f96d9704c9793ec8057ff55dde, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e3c762f96d9704c9793ec8057ff55dde, type: 3}

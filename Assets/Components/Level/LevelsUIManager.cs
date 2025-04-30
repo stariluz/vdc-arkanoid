@@ -45,7 +45,7 @@ public class LevelsUIManager : MonoBehaviour
             int levelIndex = i; // Capturar el índice para el delegado
             button.onClick.AddListener(() =>
             {
-                gameManager.LoadLevel(levelIndex + 1);
+                gameManager.LoadLevel(levelIndex);
             }); // Añadir acción al clic
 
 

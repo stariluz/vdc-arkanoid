@@ -23,12 +23,16 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        StartGame();
+    }
+    
+    void OnEnable()
+    {
         keyListener.OnKeyDown += HandleKeyDown;
         LevelsManager.countdown.OnUpdateTime += UpdateTime;
         LevelsManager.countdown.OnTimeOut += TimeOut;
-        StartGame();
     }
-    void Disable()
+    void OnDisable()
     {
         keyListener.OnKeyDown -= HandleKeyDown;
         LevelsManager.countdown.OnUpdateTime -= UpdateTime;
