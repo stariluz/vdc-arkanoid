@@ -49,7 +49,7 @@ public class UIManager : MonoBehaviour
     {
         DeactivateOtherScreens(gameStatus);
         screens[gameStatus].SetActive(true);
-
+        
         if (Array.IndexOf(InGameUI.statusArray, gameStatus) != -1)
         {
             gameDataUI.SetActive(true);

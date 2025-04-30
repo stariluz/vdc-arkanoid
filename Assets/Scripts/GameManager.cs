@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     private LevelsManager _levelsManager;
     public LevelsManager LevelsManager => _levelsManager;
+    private bool isPaused = false;
 
     // Start is called before the first frame update
     void Start()
@@ -69,18 +70,6 @@ public class GameManager : MonoBehaviour
         players[playerInTurn].Restart();
         ball.Restart(playerInTurn);
         StartGame();
-    }
-    private bool isPaused = false;
-    public void Pause()
-    {
-        isPaused = true;
-        // Debug.Log(("GAMEMANAGER PAUSE"));
-        gameStatus = GameStatus.PAUSE_SCREEN;
-        uIManager.UpdateScreen(gameStatus);
-        LevelsManager.Pause();
-        players[playerInTurn].Pause();
-        ball.Pause();
-        audioManager.OnPause();
     }
 
     public void Resume()
@@ -256,6 +245,18 @@ public class GameManager : MonoBehaviour
         uIManager.UpdateScreen(gameStatus);
     }
     
+    public void Pause()
+    {
+        isPaused = true;
+        // Debug.Log(("GAMEMANAGER PAUSE"));
+        gameStatus = GameStatus.PAUSE_SCREEN;
+        uIManager.UpdateScreen(gameStatus);
+        LevelsManager.Pause();
+        players[playerInTurn].Pause();
+        ball.Pause();
+        audioManager.OnPause();
+    }
+    
     public void OpenSettings()
     {
         if (!isPaused)
@@ -280,6 +281,24 @@ public class GameManager : MonoBehaviour
     {
         screensStack.Push(gameStatus);
         gameStatus = GameStatus.SOUNDS_SETTINGS_SCREEN;
+        uIManager.UpdateScreen(gameStatus);
+    }
+
+    public void OpenSkipLevelScreen()
+    {
+        if (!isPaused)
+        {
+            LevelsManager.Pause();
+            players[playerInTurn].Pause();
+            ball.Pause();
+        }
+        screensStack.Push(gameStatus);
+        gameStatus = GameStatus.SKIP_LEVEL_SCREEN;
+        uIManager.UpdateScreen(gameStatus);
+    }
+    public void OpenAdScreen()
+    {
+        gameStatus = GameStatus.AD_SCREEN;
         uIManager.UpdateScreen(gameStatus);
     }
 

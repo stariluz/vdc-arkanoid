@@ -32,6 +32,8 @@ public class InGameUI
         GameStatus.IN_PLAY,
         GameStatus.NEXT_LEVEL_SCREEN,
         GameStatus.TIME_OUT_SCREEN,
-        GameStatus.WIN_SCREEN
+        GameStatus.WIN_SCREEN,
+        GameStatus.SKIP_LEVEL_SCREEN,
+        GameStatus.AD_SCREEN
     };
 }
